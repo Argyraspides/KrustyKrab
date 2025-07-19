@@ -8,5 +8,5 @@
 
 struct Ticket final
 {
-    std::vector< MenuItem > m_MenuItems;
+    std::vector<MenuItem> m_MenuItems;
 };
