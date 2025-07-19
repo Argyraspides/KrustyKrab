@@ -35,11 +35,18 @@ void KrustyKrab::Open()
 
 bool KrustyKrab::WorkersReady()
 {
-    if (!m_Patrick || !m_SpongeBob || !m_Squidward)
+    if
+    (
+        !m_Patrick ||
+        !m_SpongeBob ||
+        !m_Squidward ||
+        !m_RandomTicketGenerator
+    )
     {
         std::cout << "CAN'T OPEN THE KRUSTY KRAB!" << std::endl;
         return false;
     }
+
     return true;
 }
 
@@ -53,8 +60,12 @@ void KrustyKrab::StartWorkers()
 
 void KrustyKrab::StopWorkers()
 {
+    m_RandomTicketGenerator->Stop();  // Give SpongeBob & Patrick a chance to finish
+
+    // TODO: Use condition variable for this, or another solution
+    while (m_TicketLine->Count()) {}
+
     m_Patrick->Stop();
     m_SpongeBob->Stop();
     m_Squidward->Stop();
-    m_RandomTicketGenerator->Stop();
 }

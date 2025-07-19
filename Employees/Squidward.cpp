@@ -28,8 +28,7 @@ void Squidward::Work()
 {
     while (m_Running)
     {
-        PrintLn("Squidward is working ...");
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        // std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     PrintLn("Squidward stopped working");
 }

@@ -13,6 +13,7 @@ public:
     SpongeBob(std::weak_ptr<ConcurrentQueue<Ticket>> ticketLine, std::weak_ptr<Freezer> freezer, bool IsActuallyPatrick = false);
     ~SpongeBob() override;
     void PrintLn(const std::string& str);
+    void Stop() override;
 
 protected:
     void Work() override;
@@ -20,6 +21,8 @@ protected:
 private:
     // I'm sorry, Patrick ...
     std::string WhoAmI();
+    void PrepareOrder(const Ticket& ticket);
+    std::optional<Ticket> TryGetTicket();
 
 private:
     std::weak_ptr<ConcurrentQueue<Ticket>> m_TicketLine;

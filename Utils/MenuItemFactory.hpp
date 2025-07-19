@@ -7,8 +7,7 @@
 
 namespace MenuItemFactory
 {
-    static const MenuItem MakeKrabbyPatty()
-    {
+    static MenuItem MakeKrabbyPatty() {
         std::vector< Ingredient > ingredients =
         {
             Ingredient::Bun,
@@ -22,7 +21,7 @@ namespace MenuItemFactory
             Ingredient::Mustard
         };
 
-        std::vector< uint32_t > ingredientCounts =
+        std::vector<size_t> ingredientCounts =
         {
             2,
             1,
@@ -35,7 +34,7 @@ namespace MenuItemFactory
         };
 
         // TODO: Big copy. Try to avoid.
-        return MenuItem { MenuItemName::KrabbyPatty, ingredients, ingredientCounts };
+        return MenuItem { MenuItems::KrabbyPatty, ingredients, ingredientCounts };
     }
 
 }

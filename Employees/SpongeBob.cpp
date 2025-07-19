@@ -27,30 +27,27 @@ void SpongeBob::PrintLn(const std::string &str) {
     std::cout << ((m_IsActuallyPatrick ? PINK_ANSI_SEQ : YELLOW_ANSI_SEQ) + str + "\n" + RESET_ANSI_SEQ);
 }
 
+void SpongeBob::Stop() {
+
+
+
+    Worker::Stop();
+}
+
 void SpongeBob::Work()
 {
     while (m_Running)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-        std::shared_ptr<ConcurrentQueue<Ticket>> ticketLine = m_TicketLine.lock();
-        if (!ticketLine)
-        {
-            break;
-        }
-
-        std::optional<Ticket> nextTicket = ticketLine->Dequeue();
+        std::optional<Ticket> nextTicket = TryGetTicket();
 
         if (!nextTicket.has_value())
         {
-            PrintLn("No tickets for " + WhoAmI() + " right now...");
             continue;
         }
 
-        for (int i = 0; i < nextTicket.value().m_MenuItems.size(); i++)
-        {
-            PrintLn(WhoAmI() + " is going to make " + nextTicket.value().m_MenuItems[i].m_MenuItemName);
-        }
+        PrepareOrder(nextTicket.value());
+
         m_MenuItemsCompleted += nextTicket.value().m_MenuItems.size();
         m_TicketsCompleted++;
     }
@@ -58,6 +55,29 @@ void SpongeBob::Work()
     PrintLn(WhoAmI() + " finished " + std::to_string(m_TicketsCompleted) + " tickets and " + std::to_string(m_MenuItemsCompleted) + " menu items");
 }
 
-std::string SpongeBob::WhoAmI() {
+void SpongeBob::PrepareOrder(const Ticket& ticket)
+{
+}
+
+std::optional<Ticket> SpongeBob::TryGetTicket()
+{
+    std::shared_ptr<ConcurrentQueue<Ticket>> ticketLine = m_TicketLine.lock();
+    if (!ticketLine)
+    {
+        return std::nullopt;
+    }
+
+    std::optional<Ticket> nextTicket = ticketLine->Dequeue();
+
+    if (!nextTicket.has_value())
+    {
+        return std::nullopt;
+    }
+
+    return nextTicket;
+}
+
+std::string SpongeBob::WhoAmI()
+{
     return m_IsActuallyPatrick ? "Patrick" : "Spongebob";
 }
