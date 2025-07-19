@@ -7,6 +7,7 @@
 #include "Patrick.hpp"
 #include "Squidward.hpp"
 #include "Freezer.hpp"
+#include "RandomTicketGenerator.hpp"
 #include <memory>
 
 
@@ -20,10 +21,14 @@ public:
     void Open();
     bool WorkersReady();
     void StartWorkers();
-    void LoadTickets();
+    void StopWorkers();
 
 private:
+
+
     std::shared_ptr<ConcurrentQueue<Ticket>> m_TicketLine;
+
+    std::unique_ptr<RandomTicketGenerator> m_RandomTicketGenerator;
     std::shared_ptr<ConcurrentQueue<Ticket>> m_FinishedTicketLine;
     std::shared_ptr<Freezer> m_Freezer;
 

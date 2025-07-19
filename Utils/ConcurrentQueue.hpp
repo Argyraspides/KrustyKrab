@@ -35,6 +35,12 @@ public:
         return elem;
     }
 
+    size_t Count()
+    {
+        std::unique_lock<std::mutex> lock(m_QueueMutex);
+        return static_cast<size_t>(m_Queue.size());
+    }
+
 private:
     std::queue<T> m_Queue;
     std::mutex m_QueueMutex;

@@ -7,31 +7,22 @@
 
 KrustyKrab::KrustyKrab() :
     m_TicketLine(std::make_shared<ConcurrentQueue<Ticket>>()),
+    m_RandomTicketGenerator(std::make_unique<RandomTicketGenerator>(m_TicketLine)),
+    m_FinishedTicketLine(std::make_unique<ConcurrentQueue<Ticket>>()),
     m_Freezer(std::make_shared<Freezer>()),
     m_SpongeBob(std::make_unique<SpongeBob>(m_TicketLine, m_Freezer)),
     m_Patrick(std::make_unique<Patrick>(m_TicketLine, m_Freezer, true)),
     m_Squidward(std::make_unique<Squidward>(m_TicketLine))
 {
+    std::cout << "KrustyKrab()" << "\n";
 }
 
 KrustyKrab::~KrustyKrab()
 {
+    StopWorkers();
+    std::cout << "Tickets remaining: " << std::to_string(m_TicketLine->Count()) << "\n";
+    std::cout << "~KrustyKrab()" << "\n";
 }
-
-void KrustyKrab::LoadTickets()
-{
-    Ticket t1;
-    t1.m_MenuItems = std::vector< MenuItem > { MenuItemFactory::MakeKrabbyPatty() };
-    t1.m_MenuItemCounts = std::vector< uint32_t > { 1 };
-
-    m_TicketLine->Enqueue(t1);
-    m_TicketLine->Enqueue(t1);
-    m_TicketLine->Enqueue(t1);
-    m_TicketLine->Enqueue(t1);
-    m_TicketLine->Enqueue(t1);
-
-}
-
 
 void KrustyKrab::Open()
 {
@@ -39,8 +30,6 @@ void KrustyKrab::Open()
     {
         return;
     }
-
-    LoadTickets();
     StartWorkers();
 }
 
@@ -59,4 +48,13 @@ void KrustyKrab::StartWorkers()
     m_Patrick->Start();
     m_SpongeBob->Start();
     m_Squidward->Start();
+    m_RandomTicketGenerator->Start();
+}
+
+void KrustyKrab::StopWorkers()
+{
+    m_Patrick->Stop();
+    m_SpongeBob->Stop();
+    m_Squidward->Stop();
+    m_RandomTicketGenerator->Stop();
 }

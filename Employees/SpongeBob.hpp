@@ -2,7 +2,7 @@
 #include <iostream>
 #include <memory>
 #include "ConcurrentQueue.hpp"
-#include "Worker.hpp"
+#include "../Utils/Worker.hpp"
 #include "Ticket.hpp"
 #include "Freezer.hpp"
 
@@ -18,11 +18,17 @@ protected:
     void Work() override;
 
 private:
+    // I'm sorry, Patrick ...
     std::string WhoAmI();
 
 private:
     std::weak_ptr<ConcurrentQueue<Ticket>> m_TicketLine;
     std::weak_ptr<Freezer> m_Freezer;
+
+    // I'M SORRY, PATRICK!
     bool m_IsActuallyPatrick;
+
+    unsigned long long int m_TicketsCompleted;
+    unsigned long long int m_MenuItemsCompleted;
 
 };

@@ -14,14 +14,23 @@ public:
 
     virtual ~Worker()
     {
-        m_Running = false;
-        m_WorkerThread.join();
+        Stop();
     }
 
     void Start()
     {
         m_Running = true;
         m_WorkerThread = std::thread(&Worker::Work, this);
+    }
+
+    void Stop()
+    {
+        m_Running = false;
+        if (!m_WorkerThread.joinable())
+        {
+            return;
+        }
+        m_WorkerThread.join();
     }
 
 protected:

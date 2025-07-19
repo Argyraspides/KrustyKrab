@@ -5,7 +5,7 @@
 #pragma once
 #include <memory>
 
-#include "Worker.hpp"
+#include "../Utils/Worker.hpp"
 #include "ConcurrentQueue.hpp"
 #include "Ticket.hpp"
 
@@ -16,7 +16,7 @@ public:
 
     explicit Squidward(std::weak_ptr<ConcurrentQueue<Ticket>> ticketLine);
     ~Squidward() override;
-    void PrintLn(const std::string& str);
+    static void PrintLn(const std::string& str);
 
 protected:
     void Work() override;

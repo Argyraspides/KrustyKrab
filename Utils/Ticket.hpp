@@ -6,7 +6,7 @@
 #include <cstdint>
 #include "MenuItem.hpp"
 
-struct Ticket final {
+struct Ticket final
+{
     std::vector< MenuItem > m_MenuItems;
-    std::vector< uint32_t > m_MenuItemCounts;
 };
