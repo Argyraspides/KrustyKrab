@@ -4,9 +4,9 @@
 #pragma once
 #include <array>
 #include <cstdint>
-#include "MenuItem.hpp"
+#include "MenuItem_t.hpp"
 
 struct Ticket final
 {
-    std::vector<MenuItem> m_MenuItems;
+    std::vector<Menu::MenuItem_t> m_MenuItems;
 };

@@ -9,7 +9,6 @@ set(WORKER_INCLUDE_DIRS
         ${CMAKE_CURRENT_SOURCE_DIR}/Employees
 )
 file(GLOB WORKER_SOURCE_CODE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Employees/*.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Employees/*.cpp
 )
 

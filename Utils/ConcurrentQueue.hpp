@@ -6,7 +6,7 @@
 #include <mutex>
 #include <queue>
 #include <optional>
-#include <functional>
+#include <condition_variable>
 #include <iostream>
 
 template <typename T>
@@ -18,7 +18,8 @@ public:
     ConcurrentQueue() :
     m_Queue(std::queue<T>()),
     m_QueueSize(std::atomic<size_t>(0)),
-    m_QueueMutex(std::mutex())
+    m_QueueMutex(std::mutex()),
+    m_QueueEmptyCv(std::condition_variable())
     {
     }
 
@@ -44,6 +45,11 @@ public:
         m_Queue.pop();
         --m_QueueSize;
 
+        if (m_QueueSize == 0)
+        {
+            m_QueueEmptyCv.notify_all();
+        }
+
         return elem;
     }
 
@@ -51,8 +57,12 @@ public:
         return m_QueueSize.load();
     }
 
-    [[nodiscard]] const std::atomic<size_t>& CountAtomic() const {
-        return m_QueueSize;
+    void WaitUntilEmpty()
+    {
+        std::unique_lock<std::mutex> lock(m_QueueMutex);
+        m_QueueEmptyCv.wait(lock, [&]() {
+            return this->Count() == 0;
+        });
     }
 
 private:
@@ -60,4 +70,5 @@ private:
     std::queue<T> m_Queue;
     std::atomic<size_t> m_QueueSize;
     std::mutex m_QueueMutex;
+    std::condition_variable m_QueueEmptyCv;
 };

@@ -3,13 +3,13 @@
 //
 
 #pragma once
+#include <memory>
+#include <condition_variable>
 #include "SpongeBob.hpp"
 #include "Patrick.hpp"
 #include "Squidward.hpp"
 #include "Freezer.hpp"
 #include "RandomTicketGenerator.hpp"
-#include <memory>
-
 
 class KrustyKrab
 {

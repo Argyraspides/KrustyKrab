@@ -2,7 +2,7 @@
 // Created by gaugamela on 7/19/25.
 //
 #pragma once
-#include "MenuItem.hpp"
+#include "MenuItem_t.hpp"
 
 
 namespace MenuItemFactory
@@ -41,34 +41,15 @@ namespace MenuItemFactory
         return ingredientCounts;
     }
 
-    static const MenuItem& MakeKrabbyPatty()
+    static const Menu::MenuItem_t& MakeKrabbyPatty()
     {
-        static const MenuItem krabbyPatty
+        static const Menu::MenuItem_t krabbyPatty
         {
-            MenuItems::KrabbyPatty,
+            Menu::EMenuItem::KrabbyPatty,
             GetKrabbyPattyIngredients(),
             GetKrabbyPattyIngredientCounts()
         };
 
         return krabbyPatty;
     }
-
-    static MenuItem MakeCoralBits()
-    {
-        std::vector<Ingredient> ingredients =
-        {
-            Ingredient::Coral,
-            Ingredient::Oil
-        };
-
-        std::vector<size_t> ingredientCounts =
-        {
-            1,
-            1
-        };
-
-        // TODO: Big copy. Try to avoid.
-        return MenuItem { MenuItems::CoralBits, ingredients, ingredientCounts };
-    }
-
 }

@@ -22,9 +22,9 @@ public:
     m_MinRandomTickets(1),
     m_MaxRandomTickets(5),
     m_UniformIntDist(std::uniform_int_distribution<size_t>(m_MinRandomTickets, m_MaxRandomTickets)),
-    m_MenuItemDist(std::uniform_int_distribution<size_t>(0, MenuItems::TotalMenuItems() - 1)),
+    m_MenuItemDist(std::uniform_int_distribution<size_t>(0, Menu::TotalMenuItems() - 1)),
     m_MerseneTwister(std::mt19937(m_RandomDevice())),
-    m_RandomItemFuncs(std::vector<std::function<MenuItem()>>())
+    m_RandomItemFuncs(std::vector<std::function<Menu::MenuItem_t()>>())
     {
         std::cout << "RandomTicketGenerator()" << "\n";
         InitRandomMenuItemFuncs();
@@ -47,7 +47,7 @@ protected:
             {
                 // Get random factory function from MenuItemFactory
                 size_t randomItemIndex = m_MenuItemDist(m_MerseneTwister);
-                MenuItem randomItem = m_RandomItemFuncs[randomItemIndex]();
+                Menu::MenuItem_t randomItem = m_RandomItemFuncs[randomItemIndex]();
                 randomTicket.m_MenuItems.push_back(randomItem);
             }
 
@@ -65,10 +65,9 @@ protected:
 private:
     void InitRandomMenuItemFuncs()
     {
-        m_RandomItemFuncs.reserve(MenuItems::TotalMenuItems());
+        m_RandomItemFuncs.reserve(Menu::TotalMenuItems());
 
         m_RandomItemFuncs.emplace_back(MenuItemFactory::MakeKrabbyPatty);
-        m_RandomItemFuncs.emplace_back(MenuItemFactory::MakeCoralBits);
     }
 
 private:
@@ -82,6 +81,6 @@ private:
     std::uniform_int_distribution<size_t> m_UniformIntDist;
     std::uniform_int_distribution<size_t> m_MenuItemDist;
     std::mt19937 m_MerseneTwister;
-    std::vector<std::function<MenuItem()>> m_RandomItemFuncs;
+    std::vector<std::function<Menu::MenuItem_t()>> m_RandomItemFuncs;
 
 };
