@@ -41,6 +41,7 @@ protected:
 
         while (m_Running)
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
             Ticket randomTicket;
             size_t randomMenuItemCount = m_UniformIntDist(m_MerseneTwister);
             for (size_t i = 0; i < randomMenuItemCount; i++)

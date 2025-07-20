@@ -35,20 +35,14 @@ public:
     std::optional<T> Dequeue()
     {
         std::unique_lock<std::mutex> lock1(m_QueueMutex);
-        if (m_Queue.empty())
-        {
-            return std::nullopt;
-        }
+
+        if (m_Queue.empty()) return std::nullopt;
 
         const T elem = m_Queue.front();
 
         m_Queue.pop();
-        --m_QueueSize;
 
-        if (m_QueueSize == 0)
-        {
-            m_QueueEmptyCv.notify_all();
-        }
+        if (--m_QueueSize == 0) m_QueueEmptyCv.notify_all();
 
         return elem;
     }
@@ -60,9 +54,7 @@ public:
     void WaitUntilEmpty()
     {
         std::unique_lock<std::mutex> lock(m_QueueMutex);
-        m_QueueEmptyCv.wait(lock, [&]() {
-            return this->Count() == 0;
-        });
+        m_QueueEmptyCv.wait(lock, [&]() { return Count() == 0; });
     }
 
 private:

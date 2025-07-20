@@ -62,7 +62,7 @@ void KrustyKrab::StopWorkers()
 {
     m_RandomTicketGenerator->Stop();  // Give SpongeBob & Patrick a chance to finish
 
-    m_TicketLine->WaitUntilEmpty();
+    m_TicketLine->WaitUntilEmpty(); // Condition variable waiting
 
     m_Patrick->Stop();
     m_SpongeBob->Stop();
