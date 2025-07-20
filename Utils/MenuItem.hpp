@@ -9,9 +9,11 @@
 namespace MenuItems
 {
     static const std::string KrabbyPatty = "Krabby Patty";
-    static const std::array<std::string, 1> MenuItems =
+    static const std::string CoralBits = "Coral Bits";
+    static const std::array<std::string, 2> MenuItems =
     {
-        KrabbyPatty
+        KrabbyPatty,
+        CoralBits
     };
 
     static const size_t TotalMenuItems()

@@ -3,6 +3,7 @@
 //
 
 #include "SpongeBob.hpp"
+#include "MenuItemFactory.hpp"
 
 const std::string YELLOW_ANSI_SEQ = "\033[93m";
 const std::string PINK_ANSI_SEQ = "\033[0;95m";
@@ -27,18 +28,10 @@ void SpongeBob::PrintLn(const std::string &str) {
     std::cout << ((m_IsActuallyPatrick ? PINK_ANSI_SEQ : YELLOW_ANSI_SEQ) + str + "\n" + RESET_ANSI_SEQ);
 }
 
-void SpongeBob::Stop() {
-
-
-
-    Worker::Stop();
-}
-
 void SpongeBob::Work()
 {
     while (m_Running)
     {
-
         std::optional<Ticket> nextTicket = TryGetTicket();
 
         if (!nextTicket.has_value())
@@ -57,6 +50,39 @@ void SpongeBob::Work()
 
 void SpongeBob::PrepareOrder(const Ticket& ticket)
 {
+    for (const auto& menuItem : ticket.m_MenuItems)
+    {
+        // TODO: Eh ... string comparison. Shite. Change later
+        switch (menuItem.m_MenuItemName)
+        {
+            case MenuItems::KrabbyPatty:
+                MakeKrabbyPatty();
+                break;
+            default:;
+        }
+    }
+}
+
+void SpongeBob::MakeKrabbyPatty()
+{
+    const std::vector<Ingredient>& ingredients = MenuItemFactory::GetKrabbyPattyIngredients();
+    const std::vector<size_t>& ingredientCount = MenuItemFactory::GetKrabbyPattyIngredientCounts();
+
+    for (int i = 0; i < ingredients.size(); i++)
+    {
+        std::shared_ptr<Freezer> freezer = m_Freezer.lock();
+
+        if (!freezer) return;
+
+        switch (ingredients[i])
+        {
+            case Ingredient::Bun:
+                // Put in a request for buns. Once fulfilled, wake up SpongeBob and continue?
+                break;
+            default:;
+        }
+    }
+
 }
 
 std::optional<Ticket> SpongeBob::TryGetTicket()

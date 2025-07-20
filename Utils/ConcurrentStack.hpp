@@ -11,13 +11,14 @@ class ConcurrentStack
 {
 
 public:
-    ConcurrentStack() = default;
+    ConcurrentStack() : m_Stack(std::stack<T>()), m_StackMutex(std::mutex()), m_StackSize(std::atomic<size_t>(0)) {}
     ~ConcurrentStack() = default;
 
     void Push(T elem)
     {
         std::unique_lock<std::mutex> lock(m_StackMutex);
         m_Stack.push(elem);
+        ++m_StackSize;
     }
 
     std::optional<T> Pop()
@@ -31,11 +32,19 @@ public:
 
         T elem = m_Stack.top();
         m_Stack.pop();
+        --m_StackSize;
         return elem;
+    }
+
+    [[nodiscard]] size_t Count() const
+    {
+        return m_StackSize.load();
     }
 
 private:
     std::stack<T> m_Stack;
     std::mutex m_StackMutex;
+
+    std::atomic<size_t> m_StackSize;
 
 };

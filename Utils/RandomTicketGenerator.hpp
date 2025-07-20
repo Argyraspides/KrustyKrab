@@ -27,8 +27,7 @@ public:
     m_RandomItemFuncs(std::vector<std::function<MenuItem()>>())
     {
         std::cout << "RandomTicketGenerator()" << "\n";
-        m_RandomItemFuncs.reserve(MenuItems::TotalMenuItems());
-        m_RandomItemFuncs.push_back(MenuItemFactory::MakeKrabbyPatty);
+        InitRandomMenuItemFuncs();
     }
 
     ~RandomTicketGenerator()
@@ -42,28 +41,34 @@ protected:
 
         while (m_Running)
         {
-            size_t randomItemCount = m_UniformIntDist(m_MerseneTwister);
             Ticket randomTicket;
-            for (size_t i = 0; i < randomItemCount; i++)
+            size_t randomMenuItemCount = m_UniformIntDist(m_MerseneTwister);
+            for (size_t i = 0; i < randomMenuItemCount; i++)
             {
+                // Get random factory function from MenuItemFactory
                 size_t randomItemIndex = m_MenuItemDist(m_MerseneTwister);
                 MenuItem randomItem = m_RandomItemFuncs[randomItemIndex]();
                 randomTicket.m_MenuItems.push_back(randomItem);
             }
 
             std::shared_ptr<ConcurrentQueue<Ticket>> ticketLine = m_TicketLine.lock();
-            if (!ticketLine)
-            {
-                break;
-            }
+            if (!ticketLine) break;
 
             ticketLine->Enqueue(randomTicket);
             m_TotalTicketsGenerated++;
-            m_TotalMenuItemsGenerated += randomItemCount;
+            m_TotalMenuItemsGenerated += randomMenuItemCount;
         }
 
         std::cout << "RandomTicketGenerator made a total of " + std::to_string(m_TotalTicketsGenerated) + " tickets and " + std::to_string(m_TotalMenuItemsGenerated) + " menu items\n";
+    }
 
+private:
+    void InitRandomMenuItemFuncs()
+    {
+        m_RandomItemFuncs.reserve(MenuItems::TotalMenuItems());
+
+        m_RandomItemFuncs.emplace_back(MenuItemFactory::MakeKrabbyPatty);
+        m_RandomItemFuncs.emplace_back(MenuItemFactory::MakeCoralBits);
     }
 
 private:

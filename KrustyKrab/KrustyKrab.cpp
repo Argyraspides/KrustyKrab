@@ -61,9 +61,11 @@ void KrustyKrab::StartWorkers()
 void KrustyKrab::StopWorkers()
 {
     m_RandomTicketGenerator->Stop();  // Give SpongeBob & Patrick a chance to finish
+    const std::atomic<size_t>& queueSize = m_TicketLine->CountAtomic();
 
-    // TODO: Use condition variable for this, or another solution
-    while (m_TicketLine->Count()) {}
+    // TODO: This is shit. Come up with clean event based solution.
+    while (queueSize.load() != 0) {}
+    std::cout << "All orders are now finished\n";
 
     m_Patrick->Stop();
     m_SpongeBob->Stop();

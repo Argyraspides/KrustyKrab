@@ -12,5 +12,7 @@ enum Ingredient {
     Onion,
     Pickles,
     Ketchup,
-    Mustard
+    Mustard,
+    Oil,
+    Coral
 };

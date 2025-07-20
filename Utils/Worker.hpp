@@ -23,7 +23,7 @@ public:
         m_WorkerThread = std::thread(&Worker::Work, this);
     }
 
-    virtual void Stop()
+    void Stop()
     {
         m_Running = false;
         if (!m_WorkerThread.joinable())

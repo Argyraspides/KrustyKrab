@@ -12,15 +12,17 @@ public:
     Freezer() = default;
     ~Freezer() = default;
 
-public:
-    ConcurrentStack<Ingredient> m_Buns;
-    ConcurrentStack<Ingredient> m_Patties;
-    ConcurrentStack<Ingredient> m_Lettuce;
-    ConcurrentStack<Ingredient> m_Cheeses;
-    ConcurrentStack<Ingredient> m_Tomatoes;
-    ConcurrentStack<Ingredient> m_Onions;
-    ConcurrentStack<Ingredient> m_Pickles;
-    ConcurrentStack<Ingredient> m_Ketchup;
-    ConcurrentStack<Ingredient> m_Mustard;
+    void RequestIngredients(Ingredient i, size_t count);
+    void AddIngredient(Ingredient i, size_t count);
 
+private:
+    size_t m_Buns;
+    size_t m_Patties;
+    size_t m_Lettuce;
+    size_t m_Cheeses;
+    size_t m_Tomatoes;
+    size_t m_Onions;
+    size_t m_Pickles;
+    size_t m_Ketchup;
+    size_t m_Mustard;
 };

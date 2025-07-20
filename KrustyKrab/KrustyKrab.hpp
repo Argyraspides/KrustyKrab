@@ -25,7 +25,6 @@ public:
 
 private:
 
-
     std::shared_ptr<ConcurrentQueue<Ticket>> m_TicketLine;
 
     std::unique_ptr<RandomTicketGenerator> m_RandomTicketGenerator;

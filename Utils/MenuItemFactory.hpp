@@ -7,8 +7,10 @@
 
 namespace MenuItemFactory
 {
-    static MenuItem MakeKrabbyPatty() {
-        std::vector< Ingredient > ingredients =
+
+    static const std::vector<Ingredient>& GetKrabbyPattyIngredients()
+    {
+        static const std::vector<Ingredient> krabbyPattyIngredients =
         {
             Ingredient::Bun,
             Ingredient::Patty,
@@ -20,8 +22,12 @@ namespace MenuItemFactory
             Ingredient::Ketchup,
             Ingredient::Mustard
         };
+        return krabbyPattyIngredients;
+    }
 
-        std::vector<size_t> ingredientCounts =
+    static const std::vector<size_t>& GetKrabbyPattyIngredientCounts()
+    {
+        static const std::vector<size_t> ingredientCounts =
         {
             2,
             1,
@@ -32,9 +38,37 @@ namespace MenuItemFactory
             1,
             1
         };
+        return ingredientCounts;
+    }
+
+    static const MenuItem& MakeKrabbyPatty()
+    {
+        static const MenuItem krabbyPatty
+        {
+            MenuItems::KrabbyPatty,
+            GetKrabbyPattyIngredients(),
+            GetKrabbyPattyIngredientCounts()
+        };
+
+        return krabbyPatty;
+    }
+
+    static MenuItem MakeCoralBits()
+    {
+        std::vector<Ingredient> ingredients =
+        {
+            Ingredient::Coral,
+            Ingredient::Oil
+        };
+
+        std::vector<size_t> ingredientCounts =
+        {
+            1,
+            1
+        };
 
         // TODO: Big copy. Try to avoid.
-        return MenuItem { MenuItems::KrabbyPatty, ingredients, ingredientCounts };
+        return MenuItem { MenuItems::CoralBits, ingredients, ingredientCounts };
     }
 
 }
