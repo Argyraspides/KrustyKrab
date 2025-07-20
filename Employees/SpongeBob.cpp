@@ -93,6 +93,8 @@ std::optional<Ticket> SpongeBob::TryGetTicket()
         return std::nullopt;
     }
 
+    ticketLine->WaitUntilNotEmpty();
+
     std::optional<Ticket> nextTicket = ticketLine->Dequeue();
 
     if (!nextTicket.has_value())
