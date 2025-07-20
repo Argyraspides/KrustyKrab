@@ -34,7 +34,7 @@ public:
 
     std::optional<T> Dequeue()
     {
-        std::unique_lock<std::mutex> lock1(m_QueueMutex);
+        std::unique_lock<std::mutex> lock(m_QueueMutex);
 
         if (m_Queue.empty()) return std::nullopt;
 
@@ -47,7 +47,8 @@ public:
         return elem;
     }
 
-    [[nodiscard]] size_t Count() const {
+    [[nodiscard]] size_t Count() const
+    {
         return m_QueueSize.load();
     }
 
