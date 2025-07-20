@@ -55,7 +55,7 @@ public:
     void WaitUntilEmpty()
     {
         std::unique_lock<std::mutex> lock(m_QueueMutex);
-        m_QueueEmptyCv.wait(lock, [&]() { return Count() == 0; });
+        m_QueueEmptyCv.wait(lock, [this]() { return Count() == 0; });
     }
 
 private:
