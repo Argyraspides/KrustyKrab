@@ -60,11 +60,15 @@ void KrustyKrab::StartWorkers()
 
 void KrustyKrab::StopWorkers()
 {
-    m_RandomTicketGenerator->Stop();
+    m_RandomTicketGenerator->StopLoop();
 
     m_TicketLine->WaitUntilEmpty(); // Condition variable waiting
 
-    m_Patrick->Stop();
-    m_SpongeBob->Stop();
-    m_Squidward->Stop();
+    m_Patrick->StopLoop();
+    m_Patrick->WakeUp();
+
+    m_SpongeBob->StopLoop();
+    m_SpongeBob->WakeUp();
+
+    m_Squidward->StopLoop();
 }

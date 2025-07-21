@@ -14,7 +14,8 @@ public:
 
     virtual ~Worker()
     {
-        Stop();
+        StopLoop();
+        Join();
     }
 
     void Start()
@@ -23,9 +24,13 @@ public:
         m_WorkerThread = std::thread(&Worker::Work, this);
     }
 
-    void Stop()
+    void StopLoop()
     {
         m_Running = false;
+    }
+
+    void Join()
+    {
         if (!m_WorkerThread.joinable())
         {
             return;

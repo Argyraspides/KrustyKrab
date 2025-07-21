@@ -29,7 +29,7 @@ public:
     {
         std::unique_lock<std::mutex> lock(m_QueueMutex);
         m_Queue.push(item);
-        if (m_QueueSize++ == 0) m_QueueNotEmptyCv.notify_all();
+        ++m_QueueSize;
     }
 
     std::optional<T> Dequeue()
@@ -58,10 +58,9 @@ public:
         m_QueueEmptyCv.wait(lock, [this]() { return Count() == 0; });
     }
 
-    void WaitUntilNotEmpty()
+    std::mutex& Mutex()
     {
-        std::unique_lock<std::mutex> lock(m_QueueMutex);
-        m_QueueNotEmptyCv.wait(lock, [this]() { return Count() > 0; });
+        return m_QueueMutex;
     }
 
 private:
@@ -71,5 +70,4 @@ private:
     std::mutex m_QueueMutex;
 
     std::condition_variable m_QueueEmptyCv;
-    std::condition_variable m_QueueNotEmptyCv;
 };

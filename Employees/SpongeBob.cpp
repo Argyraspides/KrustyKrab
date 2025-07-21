@@ -11,6 +11,7 @@ const std::string RESET_ANSI_SEQ = "\033[0m";
 
 SpongeBob::SpongeBob(std::weak_ptr<ConcurrentQueue<Ticket>> ticketLine, std::weak_ptr<Freezer> freezer, bool IsActuallyPatrick) :
     m_TicketLine(std::move(ticketLine)),
+    m_WorkerCv(std::condition_variable()),
     m_Freezer(std::move(freezer)),
     m_IsActuallyPatrick(IsActuallyPatrick),
     m_TicketsCompleted(0),
@@ -93,19 +94,25 @@ std::optional<Ticket> SpongeBob::TryGetTicket()
         return std::nullopt;
     }
 
-    ticketLine->WaitUntilNotEmpty();
+    {
+        std::unique_lock<std::mutex> lock(ticketLine->Mutex());
+        m_WorkerCv.wait(lock, [&]() {
+            return ticketLine->Count() > 0 || !m_Running;
+        });
+    }
 
     std::optional<Ticket> nextTicket = ticketLine->Dequeue();
 
-    if (!nextTicket.has_value())
-    {
-        return std::nullopt;
-    }
+    return nextTicket.has_value() ? nextTicket : std::nullopt;
+}
 
-    return nextTicket;
+void SpongeBob::WakeUp()
+{
+    m_WorkerCv.notify_all();
 }
 
 std::string SpongeBob::WhoAmI()
 {
     return m_IsActuallyPatrick ? "Patrick" : "Spongebob";
 }
+
