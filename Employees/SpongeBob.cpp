@@ -94,7 +94,7 @@ std::optional<Ticket> SpongeBob::TryGetTicket()
         return std::nullopt;
     }
 
-    {
+    { // ticketLine->Dequeue() below requires mutex again. Scope here.
         std::unique_lock<std::mutex> lock(ticketLine->Mutex());
         m_WorkerCv.wait(lock, [&]() {
             return ticketLine->Count() > 0 || !m_Running;
