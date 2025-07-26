@@ -14,5 +14,13 @@ enum Ingredient {
     Ketchup,
     Mustard,
     Oil,
-    Coral
+    Coral,
+    INGREDIENT_COUNT
+};
+
+struct IngredientRequest
+{
+    std::condition_variable& m_IngredientCv;
+    Ingredient m_Ingredient;
+    size_t m_IngredientCount;
 };

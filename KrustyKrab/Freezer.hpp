@@ -4,28 +4,29 @@
 #pragma once
 #include "ConcurrentQueue.hpp"
 #include "Ingredient.hpp"
+#include "Worker.hpp"
 #include <functional>
 
-class Freezer
+class Freezer : Worker
 {
 
 public:
-    Freezer();
+    Freezer(std::condition_variable& ingredientAvailCv);
     ~Freezer() = default;
 
-    void RequestIngredients(Ingredient i, size_t count);
+    void RequestIngredient(IngredientRequest ingredientReq);
     void AddIngredient(Ingredient i, size_t count);
 
 private:
-    size_t m_Buns;
-    size_t m_Patties;
-    size_t m_Lettuce;
-    size_t m_Cheeses;
-    size_t m_Tomatoes;
-    size_t m_Onions;
-    size_t m_Pickles;
-    size_t m_Ketchup;
-    size_t m_Mustard;
+    void CheckRequests();
+    void InitDefaultIngredientCount();
 
-    ConcurrentQueue<std::function<void()>> m_IngredientOrderCallbacks;
+
+private:
+    std::vector<size_t> m_Ingredients;
+
+    std::condition_variable& m_IngredientAvailCv;
+
+    std::queue<IngredientRequest> m_IngredientReqs;
+    std::mutex m_IngredientsMutex;
 };

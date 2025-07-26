@@ -20,6 +20,7 @@ SpongeBob::SpongeBob(
     m_TicketCv(ticketCv),
     m_RestTimeMs(std::chrono::milliseconds(500)),
     m_Freezer(std::move(freezer)),
+    m_IngredientCv(std::condition_variable()),
     m_IsActuallyPatrick(IsActuallyPatrick),
     m_TicketsCompleted(0),
     m_MenuItemsCompleted(0)
@@ -86,7 +87,7 @@ void SpongeBob::MakeKrabbyPatty()
         switch (ingredients[i])
         {
             case Ingredient::Bun:
-                // Put in a request for buns. Once fulfilled, wake up SpongeBob and continue?
+                freezer->RequestIngredient(IngredientRequest { m_IngredientCv, Ingredient::Bun, 2 });
                 break;
             default:;
         }

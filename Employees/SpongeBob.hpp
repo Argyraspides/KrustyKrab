@@ -37,6 +37,7 @@ private:
     std::chrono::milliseconds m_RestTimeMs;
 
     std::weak_ptr<Freezer> m_Freezer;
+    std::condition_variable m_IngredientCv;
 
     // I'M SORRY, PATRICK!
     bool m_IsActuallyPatrick;
