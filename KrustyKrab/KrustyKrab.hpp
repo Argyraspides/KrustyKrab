@@ -23,6 +23,9 @@ public:
     void StopWorkers();
 
 private:
+    void PrintLn(const std::string& msg);
+
+private:
 
     std::shared_ptr<std::queue<Ticket>> m_TicketLine;
     std::mutex m_TicketLineMutex;

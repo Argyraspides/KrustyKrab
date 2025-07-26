@@ -25,6 +25,7 @@ public:
     m_RandomDevice(std::random_device()),
     m_MinRandomTickets(1),
     m_MaxRandomTickets(5),
+    m_GenerationWaitTimeMs(std::chrono::milliseconds(100)),
     m_UniformIntDist(std::uniform_int_distribution<size_t>(m_MinRandomTickets, m_MaxRandomTickets)),
     m_MenuItemDist(std::uniform_int_distribution<size_t>(0, Menu::TotalMenuItems() - 1)),
     m_MerseneTwister(std::mt19937(m_RandomDevice())),
@@ -45,7 +46,7 @@ protected:
 
         while (m_Running)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(m_GenerationWaitTimeMs);
             Ticket randomTicket;
             size_t randomMenuItemCount = m_UniformIntDist(m_MerseneTwister);
             for (size_t i = 0; i < randomMenuItemCount; i++)
@@ -58,7 +59,6 @@ protected:
 
             std::shared_ptr<std::queue<Ticket>> ticketLine = m_TicketLine.lock();
             if (!ticketLine) break;
-
             {
                 std::unique_lock<std::mutex> lock(m_TicketLineMutex);
                 ticketLine->push(randomTicket);
@@ -90,6 +90,7 @@ private:
     std::random_device m_RandomDevice;
     const size_t m_MinRandomTickets;
     const size_t m_MaxRandomTickets;
+    std::chrono::milliseconds m_GenerationWaitTimeMs;
     std::uniform_int_distribution<size_t> m_UniformIntDist;
     std::uniform_int_distribution<size_t> m_MenuItemDist;
     std::mt19937 m_MerseneTwister;

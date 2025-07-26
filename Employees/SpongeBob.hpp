@@ -18,7 +18,7 @@ public:
             bool IsActuallyPatrick = false
         );
     ~SpongeBob() override;
-    void PrintLn(const std::string& str);
+    void PrintLn(const std::string& str) const;
 
 protected:
     void Work() override;
@@ -34,6 +34,8 @@ private:
     std::weak_ptr<std::queue<Ticket>> m_TicketLine;
     std::mutex& m_TicketLineMutex;
     std::condition_variable& m_TicketCv;
+    std::chrono::milliseconds m_RestTimeMs;
+
     std::weak_ptr<Freezer> m_Freezer;
 
     // I'M SORRY, PATRICK!

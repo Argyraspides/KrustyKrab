@@ -18,6 +18,7 @@ SpongeBob::SpongeBob(
     m_TicketLine(std::move(ticketLine)),
     m_TicketLineMutex(ticketLineMutex),
     m_TicketCv(ticketCv),
+    m_RestTimeMs(std::chrono::milliseconds(500)),
     m_Freezer(std::move(freezer)),
     m_IsActuallyPatrick(IsActuallyPatrick),
     m_TicketsCompleted(0),
@@ -31,7 +32,8 @@ SpongeBob::~SpongeBob()
    PrintLn("~" + WhoAmI() + "()");
 }
 
-void SpongeBob::PrintLn(const std::string &str) {
+void SpongeBob::PrintLn(const std::string &str) const
+{
     std::cout << ((m_IsActuallyPatrick ? PINK_ANSI_SEQ : YELLOW_ANSI_SEQ) + str + "\n" + RESET_ANSI_SEQ);
 }
 
@@ -39,7 +41,7 @@ void SpongeBob::Work()
 {
     while (m_Running)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        std::this_thread::sleep_for(m_RestTimeMs);
         Ticket nextTicket = TryGetTicket();
 
         if (nextTicket.m_MenuItems.empty())
@@ -94,25 +96,30 @@ void SpongeBob::MakeKrabbyPatty()
 
 Ticket SpongeBob::TryGetTicket() const
 {
+    Ticket finalTicket = {};
+
     std::shared_ptr<std::queue<Ticket>> ticketLine = m_TicketLine.lock();
     if (!ticketLine)
     {
-        return Ticket {};
+        return finalTicket;
     }
 
+    bool nowEmpty = false;
     {
         std::unique_lock<std::mutex> lock(m_TicketLineMutex);
         m_TicketCv.wait(lock, [&](){ return !ticketLine->empty() || !m_Running; });
 
         if (!ticketLine->empty())
         {
-            Ticket t = ticketLine->front();
+            finalTicket = ticketLine->front();
             ticketLine->pop();
-            return t;
+            nowEmpty = ticketLine->empty();
         }
     }
 
-    return Ticket {};
+    if (nowEmpty) m_TicketCv.notify_all();
+
+    return finalTicket;
 
 }
 
