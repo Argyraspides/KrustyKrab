@@ -10,6 +10,7 @@ set(WORKER_INCLUDE_DIRS
 )
 file(GLOB WORKER_SOURCE_CODE
         ${CMAKE_CURRENT_SOURCE_DIR}/Employees/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Employees/*.hpp
 )
 
 # Krusty krab source code

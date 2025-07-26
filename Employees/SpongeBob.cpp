@@ -9,9 +9,15 @@ const std::string YELLOW_ANSI_SEQ = "\033[93m";
 const std::string PINK_ANSI_SEQ = "\033[0;95m";
 const std::string RESET_ANSI_SEQ = "\033[0m";
 
-SpongeBob::SpongeBob(std::weak_ptr<ConcurrentQueue<Ticket>> ticketLine, std::weak_ptr<Freezer> freezer, bool IsActuallyPatrick) :
+SpongeBob::SpongeBob(
+    std::weak_ptr<std::queue<Ticket>> ticketLine,
+    std::mutex& ticketLineMutex,
+    std::condition_variable& ticketCv,
+    std::weak_ptr<Freezer> freezer,
+    bool IsActuallyPatrick) :
     m_TicketLine(std::move(ticketLine)),
-    m_WorkerCv(std::condition_variable()),
+    m_TicketLineMutex(ticketLineMutex),
+    m_TicketCv(ticketCv),
     m_Freezer(std::move(freezer)),
     m_IsActuallyPatrick(IsActuallyPatrick),
     m_TicketsCompleted(0),
@@ -33,17 +39,17 @@ void SpongeBob::Work()
 {
     while (m_Running)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(3));
-        std::optional<Ticket> nextTicket = TryGetTicket();
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        Ticket nextTicket = TryGetTicket();
 
-        if (!nextTicket.has_value())
+        if (nextTicket.m_MenuItems.empty())
         {
             continue;
         }
 
-        PrepareOrder(nextTicket.value());
+        PrepareOrder(nextTicket);
 
-        m_MenuItemsCompleted += nextTicket.value().m_MenuItems.size();
+        m_MenuItemsCompleted += nextTicket.m_MenuItems.size();
         m_TicketsCompleted++;
     }
 
@@ -86,32 +92,31 @@ void SpongeBob::MakeKrabbyPatty()
 
 }
 
-std::optional<Ticket> SpongeBob::TryGetTicket()
+Ticket SpongeBob::TryGetTicket() const
 {
-    std::shared_ptr<ConcurrentQueue<Ticket>> ticketLine = m_TicketLine.lock();
+    std::shared_ptr<std::queue<Ticket>> ticketLine = m_TicketLine.lock();
     if (!ticketLine)
     {
-        return std::nullopt;
+        return Ticket {};
     }
 
-    { // ticketLine->Dequeue() below requires mutex again. Scope here.
-        std::unique_lock<std::mutex> lock(ticketLine->Mutex());
-        m_WorkerCv.wait(lock, [&]() {
-            return ticketLine->Count() > 0 || !m_Running;
-        });
+    {
+        std::unique_lock<std::mutex> lock(m_TicketLineMutex);
+        m_TicketCv.wait(lock, [&](){ return !ticketLine->empty() || !m_Running; });
+
+        if (!ticketLine->empty())
+        {
+            Ticket t = ticketLine->front();
+            ticketLine->pop();
+            return t;
+        }
     }
 
-    std::optional<Ticket> nextTicket = ticketLine->Dequeue();
+    return Ticket {};
 
-    return nextTicket.has_value() ? nextTicket : std::nullopt;
 }
 
-void SpongeBob::WakeUp()
-{
-    m_WorkerCv.notify_all();
-}
-
-std::string SpongeBob::WhoAmI()
+std::string SpongeBob::WhoAmI() const
 {
     return m_IsActuallyPatrick ? "Patrick" : "Spongebob";
 }

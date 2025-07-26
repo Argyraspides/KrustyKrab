@@ -58,11 +58,6 @@ public:
         m_QueueEmptyCv.wait(lock, [this]() { return Count() == 0; });
     }
 
-    std::mutex& Mutex()
-    {
-        return m_QueueMutex;
-    }
-
 private:
 
     std::queue<T> m_Queue;

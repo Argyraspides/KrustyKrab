@@ -9,7 +9,6 @@
 #include "Patrick.hpp"
 #include "Squidward.hpp"
 #include "Freezer.hpp"
-#include "RandomTicketGenerator.hpp"
 
 class KrustyKrab
 {
@@ -25,13 +24,13 @@ public:
 
 private:
 
-    std::shared_ptr<ConcurrentQueue<Ticket>> m_TicketLine;
+    std::shared_ptr<std::queue<Ticket>> m_TicketLine;
+    std::mutex m_TicketLineMutex;
+    std::condition_variable m_TicketCv;
 
-    std::unique_ptr<RandomTicketGenerator> m_RandomTicketGenerator;
-    std::shared_ptr<ConcurrentQueue<Ticket>> m_FinishedTicketLine;
     std::shared_ptr<Freezer> m_Freezer;
 
+    std::unique_ptr<Squidward> m_Squidward;
     std::unique_ptr<SpongeBob> m_SpongeBob;
     std::unique_ptr<Patrick> m_Patrick;
-    std::unique_ptr<Squidward> m_Squidward;
 };

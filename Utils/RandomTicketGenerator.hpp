@@ -2,6 +2,8 @@
 // Created by gaugamela on 7/19/25.
 //
 
+#pragma once
+
 #include "MenuItemFactory.hpp"
 #include "ConcurrentQueue.hpp"
 #include "Ticket.hpp"
@@ -14,8 +16,10 @@
 class RandomTicketGenerator : public Worker
 {
 public:
-    RandomTicketGenerator(std::weak_ptr<ConcurrentQueue<Ticket>> ticketLine) :
+    RandomTicketGenerator(std::weak_ptr<std::queue<Ticket>> ticketLine, std::mutex& ticketLineMutex, std::condition_variable& ticketCv) :
     m_TicketLine(std::move(ticketLine)),
+    m_TicketLineMutex(ticketLineMutex),
+    m_TicketCv(ticketCv),
     m_TotalTicketsGenerated(0),
     m_TotalMenuItemsGenerated(0),
     m_RandomDevice(std::random_device()),
@@ -52,10 +56,15 @@ protected:
                 randomTicket.m_MenuItems.push_back(randomItem);
             }
 
-            std::shared_ptr<ConcurrentQueue<Ticket>> ticketLine = m_TicketLine.lock();
+            std::shared_ptr<std::queue<Ticket>> ticketLine = m_TicketLine.lock();
             if (!ticketLine) break;
 
-            ticketLine->Enqueue(randomTicket);
+            {
+                std::unique_lock<std::mutex> lock(m_TicketLineMutex);
+                ticketLine->push(randomTicket);
+            }
+            m_TicketCv.notify_all();
+
             m_TotalTicketsGenerated++;
             m_TotalMenuItemsGenerated += randomMenuItemCount;
         }
@@ -72,7 +81,9 @@ private:
     }
 
 private:
-    std::weak_ptr<ConcurrentQueue<Ticket>> m_TicketLine;
+    std::weak_ptr<std::queue<Ticket>> m_TicketLine;
+    std::mutex& m_TicketLineMutex;
+    std::condition_variable& m_TicketCv;
     unsigned long long int m_TotalTicketsGenerated;
     unsigned long long int m_TotalMenuItemsGenerated;
 

@@ -6,13 +6,13 @@
 #include "MenuItemFactory.hpp"
 
 KrustyKrab::KrustyKrab() :
-    m_TicketLine(std::make_shared<ConcurrentQueue<Ticket>>()),
-    m_RandomTicketGenerator(std::make_unique<RandomTicketGenerator>(m_TicketLine)),
-    m_FinishedTicketLine(std::make_unique<ConcurrentQueue<Ticket>>()),
+    m_TicketLine(std::make_shared<std::queue<Ticket>>()),
+    m_TicketLineMutex(std::mutex()),
+    m_TicketCv(std::condition_variable()),
+    m_Squidward(std::make_unique<Squidward>(m_TicketLine, m_TicketLineMutex, m_TicketCv)),
     m_Freezer(std::make_shared<Freezer>()),
-    m_SpongeBob(std::make_unique<SpongeBob>(m_TicketLine, m_Freezer)),
-    m_Patrick(std::make_unique<Patrick>(m_TicketLine, m_Freezer, true)),
-    m_Squidward(std::make_unique<Squidward>(m_TicketLine))
+    m_SpongeBob(std::make_unique<SpongeBob>(m_TicketLine, m_TicketLineMutex, m_TicketCv, m_Freezer)),
+    m_Patrick(std::make_unique<Patrick>(m_TicketLine, m_TicketLineMutex, m_TicketCv, m_Freezer, true))
 {
     std::cout << "KrustyKrab()" << "\n";
 }
@@ -20,7 +20,8 @@ KrustyKrab::KrustyKrab() :
 KrustyKrab::~KrustyKrab()
 {
     StopWorkers();
-    std::cout << "Tickets remaining: " << std::to_string(m_TicketLine->Count()) << "\n";
+    std::unique_lock<std::mutex> lock(m_TicketLineMutex);
+    std::cout << "Tickets remaining: " << std::to_string(m_TicketLine->size()) << "\n";
     std::cout << "~KrustyKrab()" << "\n";
 }
 
@@ -39,8 +40,7 @@ bool KrustyKrab::WorkersReady()
     (
         !m_Patrick ||
         !m_SpongeBob ||
-        !m_Squidward ||
-        !m_RandomTicketGenerator
+        !m_Squidward
     )
     {
         std::cout << "CAN'T OPEN THE KRUSTY KRAB!" << std::endl;
@@ -55,20 +55,13 @@ void KrustyKrab::StartWorkers()
     m_Patrick->Start();
     m_SpongeBob->Start();
     m_Squidward->Start();
-    m_RandomTicketGenerator->Start();
 }
 
 void KrustyKrab::StopWorkers()
 {
-    m_RandomTicketGenerator->StopLoop();
-
-    m_TicketLine->WaitUntilEmpty(); // Condition variable waiting
-
-    m_Patrick->StopLoop();
-    m_Patrick->WakeUp();
-
-    m_SpongeBob->StopLoop();
-    m_SpongeBob->WakeUp();
-
     m_Squidward->StopLoop();
+    m_Patrick->StopLoop();
+    m_SpongeBob->StopLoop();
+
+    m_TicketCv.notify_all();
 }
