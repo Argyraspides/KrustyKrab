@@ -40,20 +40,11 @@ void Freezer::RequestIngredient(const IngredientRequest& ingredientReq)
 void Freezer::AddIngredient(Ingredient i, size_t count)
 {
     std::unique_lock<std::mutex> lock(m_IngredientsMutex);
-    m_Ingredients[i] += count;
-}
 
-void Freezer::AddIngredients(const std::vector<Ingredient>& is, const std::vector<size_t>& cts)
-{
-    if (is.size() != cts.size())
-    {
-        throw std::runtime_error("Cannot add ingredients -- ingredient vector differs in size from its counts!");
-    }
+    size_t newVal = m_Ingredients[i] + count;
+    if (newVal > m_MaxIngredients) return;
 
-    for (size_t i = 0; i < is.size(); i++)
-    {
-        AddIngredient(is[i], cts[i]);
-    }
+    m_Ingredients[i] = newVal;
 }
 
 std::mutex& Freezer::IngredientsMutex()

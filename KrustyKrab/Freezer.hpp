@@ -36,4 +36,6 @@ private:
 
     std::queue<IngredientRequest> m_IngredientReqs;
     std::condition_variable m_RequestsCv;
+
+    static constexpr size_t m_MaxIngredients = 100'000'000;
 };
