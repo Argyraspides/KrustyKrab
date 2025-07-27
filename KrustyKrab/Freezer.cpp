@@ -2,7 +2,7 @@
 // Created by gaugamela on 7/20/25.
 //
 #include "Freezer.hpp"
-
+#include <exception>
 Freezer::Freezer() :
     m_Ingredients(std::vector<size_t>(Ingredient::INGREDIENT_COUNT)),
     m_IngredientsMutex(std::mutex()),
@@ -41,6 +41,19 @@ void Freezer::AddIngredient(Ingredient i, size_t count)
 {
     std::unique_lock<std::mutex> lock(m_IngredientsMutex);
     m_Ingredients[i - 1] += count;
+}
+
+void Freezer::AddIngredients(const std::vector<Ingredient>& is, const std::vector<size_t>& cts)
+{
+    if (is.size() != cts.size())
+    {
+        throw std::runtime_error("Cannot add ingredients -- ingredient vector differs in size from its counts!");
+    }
+
+    for (size_t i = 0; i < is.size(); i++)
+    {
+        AddIngredient(is[i], cts[i]);
+    }
 }
 
 std::mutex& Freezer::IngredientsMutex()

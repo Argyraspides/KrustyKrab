@@ -18,5 +18,7 @@ void DeliveryTruck::Work()
     {
         std::this_thread::sleep_for(m_NextDeliveryTime);
 
+
+
     }
 }

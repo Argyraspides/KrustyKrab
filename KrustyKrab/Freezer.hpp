@@ -15,7 +15,8 @@ public:
     ~Freezer();
 
     void RequestIngredient(const IngredientRequest& ingredientReq);
-    void AddIngredient(Ingredient i, size_t count);
+    void AddIngredient(Ingredient i, size_t ct);
+    void AddIngredients(const std::vector<Ingredient>& is, const std::vector<size_t>& cts);
     std::mutex& IngredientsMutex();
     void WakeUp();
     void WaitUntilReqsEmpty();
