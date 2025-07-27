@@ -13,12 +13,14 @@ m_MerseneTwister(std::mt19937(m_RandomDevice())),
 m_MinRandomIngredients(1),
 m_MaxRandomIngredients(100),
 m_IngredientCtDist(std::uniform_int_distribution<size_t>(m_MinRandomIngredients, m_MaxRandomIngredients)),
-m_IngredientTypeDist(std::uniform_int_distribution<size_t>(Ingredient::Bun, Ingredient::INGREDIENT_COUNT - 1))
+m_IngredientTypeDist(std::uniform_int_distribution<size_t>(Ingredient::Bun, Ingredient::INGREDIENT_COUNT - 1)),
+m_DeliveredIngredients(std::array<size_t, Ingredient::INGREDIENT_COUNT>())
 {
 }
 
 DeliveryTruck::~DeliveryTruck()
 {
+    std::cout << "~DeliveryTruck()" << std::endl;
 }
 
 void DeliveryTruck::Work()
@@ -35,5 +37,12 @@ void DeliveryTruck::Work()
         if (!freezer) continue;
 
         freezer->AddIngredient(randomIngredient, randomIngredientCt);
+        m_DeliveredIngredients[static_cast<size_t>(randomIngredient)] += randomIngredientCt;
+    }
+
+    std::cout << "\nTotal ingredients delivered:\n";
+    for (size_t i = 0; i < m_DeliveredIngredients.size(); i++)
+    {
+        std::cout << IngredientNames[i] << ": " << m_DeliveredIngredients[i] << "\n";
     }
 }

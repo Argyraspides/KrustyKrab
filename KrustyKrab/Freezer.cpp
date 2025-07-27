@@ -97,6 +97,7 @@ void Freezer::Work()
         }
     }
 
+    std::cout << "\nIngredients left in the freezer:\n";
     for (size_t i = 0; i < m_Ingredients.size(); i++)
     {
         std::cout << IngredientNames[i] << " left: " << std::to_string(m_Ingredients[i]) << "\n";
