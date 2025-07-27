@@ -9,11 +9,11 @@ const std::string RED_ANSI_SEQ = "\033[31m";
 const std::string RESET_ANSI_SEQ = "\033[0m";
 
 KrustyKrab::KrustyKrab() :
-    m_TicketLine(std::make_shared<std::queue<Ticket>>()),
     m_TicketLineMutex(std::mutex()),
     m_TicketCv(std::condition_variable()),
-    m_Squidward(std::make_unique<Squidward>(m_TicketLine, m_TicketLineMutex, m_TicketCv)),
+    m_TicketLine(std::make_shared<std::queue<Ticket>>()),
     m_Freezer(std::make_shared<Freezer>()),
+    m_Squidward(std::make_unique<Squidward>(m_TicketLine, m_TicketLineMutex, m_TicketCv)),
     m_SpongeBob(std::make_unique<SpongeBob>(m_TicketLine, m_TicketLineMutex, m_TicketCv, m_Freezer)),
     m_Patrick(std::make_unique<Patrick>(m_TicketLine, m_TicketLineMutex, m_TicketCv, m_Freezer, true))
 {
@@ -55,29 +55,30 @@ bool KrustyKrab::WorkersReady()
 
 void KrustyKrab::StartWorkers()
 {
+    m_Freezer->Start();
+    m_Squidward->Start();
     m_Patrick->Start();
     m_SpongeBob->Start();
-    m_Squidward->Start();
 }
 
 void KrustyKrab::StopWorkers()
 {
     m_Squidward->Stop();
 
-    {
-        PrintLn("The Krusty Krab is about to close. Waiting for Patrick & SpongeBob to finish their tickets ...");
-        std::unique_lock<std::mutex> lock(m_TicketLineMutex);
-        m_TicketCv.wait(lock, [this](){ return m_TicketLine->empty(); });
-    }
-
+    PrintLn("The Krusty Krab is about to close. Waiting for Patrick & SpongeBob to finish their tickets ...");
+    m_Freezer->WaitUntilReqsEmpty();
     PrintLn("Patrick & SpongeBob have finished their tickets!");
 
+    m_Freezer->StopLoop();
+    m_Freezer->WakeUp();
+    m_Freezer->Stop();
+
     m_Patrick->StopLoop();
-    m_SpongeBob->StopLoop();
-
-    m_TicketCv.notify_all();
-
+    m_Patrick->WakeUp();
     m_Patrick->Stop();
+
+    m_SpongeBob->StopLoop();
+    m_SpongeBob->WakeUp();
     m_SpongeBob->Stop();
 }
 

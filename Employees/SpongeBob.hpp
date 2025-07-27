@@ -19,6 +19,7 @@ public:
         );
     ~SpongeBob() override;
     void PrintLn(const std::string& str) const;
+    void WakeUp();
 
 protected:
     void Work() override;
@@ -37,7 +38,7 @@ private:
     std::chrono::milliseconds m_RestTimeMs;
 
     std::weak_ptr<Freezer> m_Freezer;
-    std::condition_variable m_IngredientCv;
+    std::condition_variable m_IngredientsCv;
 
     // I'M SORRY, PATRICK!
     bool m_IsActuallyPatrick;

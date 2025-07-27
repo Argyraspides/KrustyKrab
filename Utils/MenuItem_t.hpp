@@ -23,8 +23,8 @@ namespace Menu
         return MenuItems.size();
     }
 
-    struct MenuItem_t final {
-
+    struct MenuItem_t final
+    {
         Menu::EMenuItem m_MenuItemName;
         std::vector<Ingredient> m_Ingredients;
         std::vector<size_t> m_IngredientCounts;

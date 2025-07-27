@@ -20,7 +20,7 @@ SpongeBob::SpongeBob(
     m_TicketCv(ticketCv),
     m_RestTimeMs(std::chrono::milliseconds(500)),
     m_Freezer(std::move(freezer)),
-    m_IngredientCv(std::condition_variable()),
+    m_IngredientsCv(std::condition_variable()),
     m_IsActuallyPatrick(IsActuallyPatrick),
     m_TicketsCompleted(0),
     m_MenuItemsCompleted(0)
@@ -36,6 +36,12 @@ SpongeBob::~SpongeBob()
 void SpongeBob::PrintLn(const std::string &str) const
 {
     std::cout << ((m_IsActuallyPatrick ? PINK_ANSI_SEQ : YELLOW_ANSI_SEQ) + str + "\n" + RESET_ANSI_SEQ);
+}
+
+void SpongeBob::WakeUp()
+{
+    m_TicketCv.notify_all();
+    m_IngredientsCv.notify_all();
 }
 
 void SpongeBob::Work()
@@ -84,13 +90,14 @@ void SpongeBob::MakeKrabbyPatty()
 
         if (!freezer) return;
 
-        switch (ingredients[i])
-        {
-            case Ingredient::Bun:
-                freezer->RequestIngredient(IngredientRequest { m_IngredientCv, Ingredient::Bun, 2 });
-                break;
-            default:;
-        }
+        bool requestFulfilled = false; // Written to by the Freezer
+
+        IngredientRequest ir { m_IngredientsCv, requestFulfilled, ingredients[i], ingredientCount[i] };
+        freezer->RequestIngredient(ir);
+
+        std::unique_lock<std::mutex> lock(freezer->IngredientsMutex());
+        m_IngredientsCv.wait(lock, [&](){ return requestFulfilled || !m_Running; });
+
     }
 
 }

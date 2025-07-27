@@ -7,26 +7,32 @@
 #include "Worker.hpp"
 #include <functional>
 
-class Freezer : Worker
+class Freezer : public Worker
 {
 
 public:
-    Freezer(std::condition_variable& ingredientAvailCv);
-    ~Freezer() = default;
+    Freezer();
+    ~Freezer();
 
-    void RequestIngredient(IngredientRequest ingredientReq);
+    void RequestIngredient(const IngredientRequest& ingredientReq);
     void AddIngredient(Ingredient i, size_t count);
+    std::mutex& IngredientsMutex();
+    void WakeUp();
+    void WaitUntilReqsEmpty();
+
+protected:
+    void Work() override;
 
 private:
-    void CheckRequests();
     void InitDefaultIngredientCount();
 
 
 private:
     std::vector<size_t> m_Ingredients;
+    std::mutex m_IngredientsMutex;
 
-    std::condition_variable& m_IngredientAvailCv;
+    std::condition_variable m_IngredientsCv;
 
     std::queue<IngredientRequest> m_IngredientReqs;
-    std::mutex m_IngredientsMutex;
+    std::condition_variable m_RequestsCv;
 };

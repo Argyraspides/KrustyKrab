@@ -25,7 +25,7 @@ public:
     m_RandomDevice(std::random_device()),
     m_MinRandomTickets(1),
     m_MaxRandomTickets(5),
-    m_GenerationWaitTimeMs(std::chrono::milliseconds(100)),
+    m_GenerationWaitTimeMs(std::chrono::milliseconds(1000)),
     m_UniformIntDist(std::uniform_int_distribution<size_t>(m_MinRandomTickets, m_MaxRandomTickets)),
     m_MenuItemDist(std::uniform_int_distribution<size_t>(0, Menu::TotalMenuItems() - 1)),
     m_MerseneTwister(std::mt19937(m_RandomDevice())),
