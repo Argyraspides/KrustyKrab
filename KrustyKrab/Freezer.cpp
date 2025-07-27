@@ -40,7 +40,7 @@ void Freezer::RequestIngredient(const IngredientRequest& ingredientReq)
 void Freezer::AddIngredient(Ingredient i, size_t count)
 {
     std::unique_lock<std::mutex> lock(m_IngredientsMutex);
-    m_Ingredients[i - 1] += count;
+    m_Ingredients[i] += count;
 }
 
 void Freezer::AddIngredients(const std::vector<Ingredient>& is, const std::vector<size_t>& cts)
@@ -72,6 +72,8 @@ void Freezer::WaitUntilReqsEmpty()
     m_IngredientsCv.wait(lock, [this](){ return m_IngredientReqs.empty(); });
 }
 
+// TODO: Current basically a busy wait despite condition variable. If a request cannot be fulfilled,
+//  we don't pop from queue, thus queue is not empty and the while loop continues like a normal loop.
 void Freezer::Work()
 {
     while (m_Running)

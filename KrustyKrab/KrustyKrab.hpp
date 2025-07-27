@@ -9,6 +9,7 @@
 #include "Patrick.hpp"
 #include "Squidward.hpp"
 #include "Freezer.hpp"
+#include "DeliveryTruck.hpp"
 
 class KrustyKrab
 {
@@ -32,6 +33,7 @@ private:
     std::shared_ptr<std::queue<Ticket>> m_TicketLine;
 
     std::shared_ptr<Freezer> m_Freezer;
+    std::shared_ptr<DeliveryTruck> m_DeliveryTruck;
 
     std::unique_ptr<Squidward> m_Squidward;
     std::unique_ptr<SpongeBob> m_SpongeBob;
