@@ -4,10 +4,10 @@
 #include "Freezer.hpp"
 #include <exception>
 Freezer::Freezer() :
-    m_Ingredients(std::vector<size_t>(Ingredient::INGREDIENT_COUNT)),
+    m_Ingredients(std::vector<size_t>(EIngredient::INGREDIENT_COUNT)),
     m_IngredientsMutex(std::mutex()),
     m_IngredientsCv(std::condition_variable()),
-    m_IngredientReqs(std::queue<IngredientRequest>()),
+    m_IngredientReqs(std::queue<IngredientRequest_t>()),
     m_RequestsCv(std::condition_variable())
 {
     InitDefaultIngredientCount();
@@ -30,14 +30,14 @@ void Freezer::InitDefaultIngredientCount() {
 
 }
 
-void Freezer::RequestIngredient(const IngredientRequest& ingredientReq)
+void Freezer::RequestIngredient(const IngredientRequest_t& ingredientReq)
 {
     std::unique_lock<std::mutex> lock(m_IngredientsMutex);
     m_IngredientReqs.push(ingredientReq);
     m_IngredientsCv.notify_all();
 }
 
-void Freezer::AddIngredient(Ingredient i, size_t count)
+void Freezer::AddIngredient(EIngredient i, size_t count)
 {
     std::unique_lock<std::mutex> lock(m_IngredientsMutex);
 
@@ -80,12 +80,11 @@ void Freezer::Work()
 
             if (m_IngredientReqs.empty()) break;
 
-            IngredientRequest& req = m_IngredientReqs.front();
-            size_t ingredientIdx = static_cast<size_t>(req.m_Ingredient);
-            if (m_Ingredients[ingredientIdx] >= req.m_IngredientCount)
+            IngredientRequest_t& req = m_IngredientReqs.front();
+            if (m_Ingredients[req.m_Ingredient] >= req.m_IngredientCount)
             {
                 m_IngredientReqs.pop();
-                m_Ingredients[ingredientIdx] -= req.m_IngredientCount;
+                m_Ingredients[req.m_Ingredient] -= req.m_IngredientCount;
                 req.m_RequestFulfilled = true;
                 req.m_IngredientCv.notify_one();
             }

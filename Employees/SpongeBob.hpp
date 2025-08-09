@@ -30,6 +30,7 @@ private:
     void PrepareOrder(const Ticket& ticket);
     void MakeKrabbyPatty();
     [[nodiscard]] Ticket TryGetTicket() const;
+    void PrintStatistics() const;
 
 private:
     std::weak_ptr<std::queue<Ticket>> m_TicketLine;
@@ -44,6 +45,6 @@ private:
     bool m_IsActuallyPatrick;
 
     unsigned long long int m_TicketsCompleted;
-    unsigned long long int m_MenuItemsCompleted;
+    std::unordered_map<Menu::EMenuItem, size_t> m_CompletedMenuItems;
 
 };

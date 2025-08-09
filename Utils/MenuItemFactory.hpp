@@ -8,19 +8,19 @@
 namespace MenuItemFactory
 {
 
-    static const std::vector<Ingredient>& GetKrabbyPattyIngredients()
+    static const std::vector<EIngredient>& GetKrabbyPattyIngredients()
     {
-        static const std::vector<Ingredient> krabbyPattyIngredients =
+        static const std::vector<EIngredient> krabbyPattyIngredients =
         {
-            Ingredient::Bun,
-            Ingredient::Patty,
-            Ingredient::Lettuce,
-            Ingredient::Cheese,
-            Ingredient::Tomato,
-            Ingredient::Onion,
-            Ingredient::Pickles,
-            Ingredient::Ketchup,
-            Ingredient::Mustard
+            EIngredient::Bun,
+            EIngredient::Patty,
+            EIngredient::Lettuce,
+            EIngredient::Cheese,
+            EIngredient::Tomato,
+            EIngredient::Onion,
+            EIngredient::Pickles,
+            EIngredient::Ketchup,
+            EIngredient::Mustard
         };
         return krabbyPattyIngredients;
     }

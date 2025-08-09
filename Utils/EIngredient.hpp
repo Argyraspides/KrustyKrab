@@ -3,7 +3,7 @@
 //
 #pragma once
 
-enum Ingredient {
+enum EIngredient {
     Bun = 0,
     Patty,
     Lettuce,
@@ -18,7 +18,7 @@ enum Ingredient {
     INGREDIENT_COUNT
 };
 
-static const std::array<std::string, Ingredient::INGREDIENT_COUNT> IngredientNames =
+static const std::array<std::string, EIngredient::INGREDIENT_COUNT> IngredientNames =
 {
     "Bun",
     "Patty",
@@ -33,11 +33,11 @@ static const std::array<std::string, Ingredient::INGREDIENT_COUNT> IngredientNam
     "Coral"
 };
 
-struct IngredientRequest
+struct IngredientRequest_t
 {
     std::condition_variable& m_IngredientCv;
     bool& m_RequestFulfilled;
 
-    Ingredient m_Ingredient;
+    EIngredient m_Ingredient;
     size_t m_IngredientCount;
 };

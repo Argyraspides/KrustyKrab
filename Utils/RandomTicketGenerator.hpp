@@ -27,7 +27,7 @@ public:
     m_MaxRandomTickets(5),
     m_GenerationWaitTimeMs(std::chrono::milliseconds(1000)),
     m_UniformIntDist(std::uniform_int_distribution<size_t>(m_MinRandomTickets, m_MaxRandomTickets)),
-    m_MenuItemDist(std::uniform_int_distribution<size_t>(0, Menu::TotalMenuItems() - 1)),
+    m_MenuItemDist(std::uniform_int_distribution<size_t>(0, Menu::EMenuItem::MENU_ITEM_COUNT - 1)),
     m_MerseneTwister(std::mt19937(m_RandomDevice())),
     m_RandomItemFuncs(std::vector<std::function<Menu::MenuItem_t()>>())
     {
@@ -75,7 +75,7 @@ protected:
 private:
     void InitRandomMenuItemFuncs()
     {
-        m_RandomItemFuncs.reserve(Menu::TotalMenuItems());
+        m_RandomItemFuncs.reserve(Menu::EMenuItem::MENU_ITEM_COUNT);
 
         m_RandomItemFuncs.emplace_back(MenuItemFactory::MakeKrabbyPatty);
     }

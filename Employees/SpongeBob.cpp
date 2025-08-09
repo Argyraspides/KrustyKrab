@@ -23,7 +23,7 @@ SpongeBob::SpongeBob(
     m_IngredientsCv(std::condition_variable()),
     m_IsActuallyPatrick(IsActuallyPatrick),
     m_TicketsCompleted(0),
-    m_MenuItemsCompleted(0)
+    m_CompletedMenuItems(0)
 {
    PrintLn(WhoAmI() + "()");
 }
@@ -57,12 +57,8 @@ void SpongeBob::Work()
         }
 
         PrepareOrder(nextTicket);
-
-        m_MenuItemsCompleted += nextTicket.m_MenuItems.size();
-        m_TicketsCompleted++;
     }
-
-    PrintLn(WhoAmI() + " finished " + std::to_string(m_TicketsCompleted) + " tickets and " + std::to_string(m_MenuItemsCompleted) + " menu items");
+    PrintStatistics();
 }
 
 void SpongeBob::PrepareOrder(const Ticket& ticket)
@@ -73,15 +69,17 @@ void SpongeBob::PrepareOrder(const Ticket& ticket)
         {
             case Menu::EMenuItem::KrabbyPatty:
                 MakeKrabbyPatty();
+                m_CompletedMenuItems[Menu::EMenuItem::KrabbyPatty]++;
                 break;
             default:;
         }
+        ++m_TicketsCompleted;
     }
 }
 
 void SpongeBob::MakeKrabbyPatty()
 {
-    const std::vector<Ingredient>& ingredients = MenuItemFactory::GetKrabbyPattyIngredients();
+    const std::vector<EIngredient>& ingredients = MenuItemFactory::GetKrabbyPattyIngredients();
     const std::vector<size_t>& ingredientCount = MenuItemFactory::GetKrabbyPattyIngredientCounts();
 
     for (int i = 0; i < ingredients.size(); i++)
@@ -92,7 +90,7 @@ void SpongeBob::MakeKrabbyPatty()
 
         bool requestFulfilled = false; // Written to by the Freezer
 
-        IngredientRequest ir { m_IngredientsCv, requestFulfilled, ingredients[i], ingredientCount[i] };
+        IngredientRequest_t ir { m_IngredientsCv, requestFulfilled, ingredients[i], ingredientCount[i] };
         freezer->RequestIngredient(ir);
 
         std::unique_lock<std::mutex> lock(freezer->IngredientsMutex());
@@ -129,6 +127,16 @@ Ticket SpongeBob::TryGetTicket() const
 
     return finalTicket;
 
+}
+
+void SpongeBob::PrintStatistics() const
+{
+    PrintLn(WhoAmI() + " finished " + std::to_string(m_TicketsCompleted) + " tickets");
+
+    for (const auto& [menuItem, count] : m_CompletedMenuItems)
+    {
+        PrintLn("\t * " + std::to_string(count) + " " + Menu::MenuItemNames[menuItem] + "(s)");
+    }
 }
 
 std::string SpongeBob::WhoAmI() const
