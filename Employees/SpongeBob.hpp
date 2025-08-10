@@ -2,11 +2,12 @@
 #include <iostream>
 #include <memory>
 #include "ConcurrentQueue.hpp"
-#include "../Utils/Worker.hpp"
+#include "Worker.hpp"
 #include "Ticket.hpp"
 #include "Freezer.hpp"
 
-struct FrycookStats_t {
+struct FrycookStats_t
+{
     unsigned long long int m_TicketsCompleted;
     std::unordered_map<Menu::EMenuItem, size_t> m_CompletedMenuItems;
 };
@@ -25,7 +26,7 @@ public:
     ~SpongeBob() override;
     void PrintLn(const std::string& str) const;
     void WakeUp();
-    const FrycookStats_t& WorkerStats();
+    const FrycookStats_t& WorkerStats() const;
 
 protected:
     void Work() override;

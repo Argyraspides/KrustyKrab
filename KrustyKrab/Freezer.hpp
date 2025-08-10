@@ -11,6 +11,7 @@ struct FreezerStats_t
 {
     std::vector<size_t> m_InitialIngredientCts      {};
     std::vector<size_t> m_AddedIngredientCts        {};
+    std::vector<size_t> m_TakenIngredientCts        {};
     std::vector<size_t> m_RemainingIngredientCts    {};
 };
 

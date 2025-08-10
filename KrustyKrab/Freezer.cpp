@@ -16,7 +16,6 @@ Freezer::Freezer() :
 
 Freezer::~Freezer()
 {
-    m_FreezerStats.m_RemainingIngredientCts = m_Ingredients;
     std::cout << "~Freezer()\n";
 }
 
@@ -31,7 +30,8 @@ void Freezer::InitDefaultIngredientCount() {
     }
 
     m_FreezerStats.m_InitialIngredientCts = m_Ingredients;
-
+    m_FreezerStats.m_AddedIngredientCts = std::vector<size_t>(EIngredient::INGREDIENT_COUNT);
+    m_FreezerStats.m_TakenIngredientCts = std::vector<size_t>(EIngredient::INGREDIENT_COUNT);
 }
 
 void Freezer::RequestIngredient(const IngredientRequest_t& ingredientReq)
@@ -95,7 +95,10 @@ void Freezer::Work()
             if (m_Ingredients[req.m_Ingredient] >= req.m_IngredientCount)
             {
                 m_IngredientReqs.pop();
+
                 m_Ingredients[req.m_Ingredient] -= req.m_IngredientCount;
+                m_FreezerStats.m_TakenIngredientCts[req.m_Ingredient] += req.m_IngredientCount;
+
                 req.m_RequestFulfilled = true;
                 req.m_IngredientCv.notify_one();
             }
@@ -107,10 +110,5 @@ void Freezer::Work()
         }
     }
 
-    std::cout << "\nIngredients left in the freezer:\n";
-    for (size_t i = 0; i < m_Ingredients.size(); i++)
-    {
-        std::cout << IngredientNames[i] << " left: " << std::to_string(m_Ingredients[i]) << "\n";
-    }
-
+    m_FreezerStats.m_RemainingIngredientCts = m_Ingredients;
 }

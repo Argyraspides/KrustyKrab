@@ -58,8 +58,8 @@ protected:
         {
             std::this_thread::sleep_for(m_GenerationWaitTimeMs);
             Ticket randomTicket;
-            size_t randomMenuItemCount = m_UniformIntDist(m_MerseneTwister);
-            for (size_t i = 0; i < randomMenuItemCount; i++)
+            size_t randomNumberOfMenuItems = m_UniformIntDist(m_MerseneTwister);
+            for (size_t i = 0; i < randomNumberOfMenuItems; i++)
             {
                 // Get random factory function from MenuItemFactory
                 size_t randomItemIndex = m_MenuItemDist(m_MerseneTwister);
@@ -67,7 +67,7 @@ protected:
                 randomTicket.m_MenuItems.push_back(randomItem);
 
                 // Add to generated statistics
-                m_RandomTicketStats.m_MenuItemsGenerated[randomItem.m_MenuItemName] += randomMenuItemCount;
+                m_RandomTicketStats.m_MenuItemsGenerated[randomItem.m_MenuItemName]++;
             }
 
             std::shared_ptr<std::queue<Ticket>> ticketLine = m_TicketLine.lock();

@@ -39,10 +39,4 @@ void DeliveryTruck::Work()
         freezer->AddIngredient(randomIngredient, randomIngredientCt);
         m_DeliveredIngredients[randomIngredient] += randomIngredientCt;
     }
-
-    std::cout << "\nTotal ingredients delivered:\n";
-    for (size_t i = 0; i < m_DeliveredIngredients.size(); i++)
-    {
-        std::cout << IngredientNames[i] << ": " << m_DeliveredIngredients[i] << "\n";
-    }
 }

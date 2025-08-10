@@ -24,8 +24,6 @@ KrustyKrab::KrustyKrab() :
 KrustyKrab::~KrustyKrab()
 {
     StopWorkers();
-    std::unique_lock<std::mutex> lock(m_TicketLineMutex);
-    PrintLn("Tickets remaining: " + std::to_string(m_TicketLine->size()));
     PrintLn("~KrustyKrab()");
 }
 
@@ -84,6 +82,8 @@ void KrustyKrab::StopWorkers()
     m_SpongeBob->StopLoop();
     m_SpongeBob->WakeUp();
     m_SpongeBob->Stop();
+
+    PrintFinalStats();
 }
 
 void KrustyKrab::PrintLn(const std::string &msg)
@@ -91,12 +91,61 @@ void KrustyKrab::PrintLn(const std::string &msg)
     std::cout << RED_ANSI_SEQ << msg << "\n" << RESET_ANSI_SEQ;
 }
 
-void KrustyKrab::PrintFinalStats()
+void KrustyKrab::PrintFinalStats() const
 {
     const FrycookStats_t& spongebobStats = m_SpongeBob->WorkerStats();
     const FrycookStats_t& patrickStats = m_Patrick->WorkerStats();
     const RandomTicketStats_t ticketGeneratorStats = m_Squidward->TicketStats();
-    const FreezerStats_t freezerStats = m_Freezer->
+    const FreezerStats_t freezerStats = m_Freezer->FreezerStats();
 
+    std::cout << std::endl;
+
+    std::cout << "/ INGREDIENT STATS----------------------------------------------------------- /\n";
+    std::cout << "Initial:\t\t\t\t";
+    for (const size_t& ct : freezerStats.m_InitialIngredientCts) std::cout << ct << "\t";
+    std::cout << "\n";
+    std::cout << "Added:\t\t\t\t\t";
+    for (const size_t& ct : freezerStats.m_AddedIngredientCts) std::cout << ct << "\t";
+    std::cout << "\n";
+    std::cout << "Taken:\t\t\t\t\t";
+    for (const size_t& ct : freezerStats.m_TakenIngredientCts) std::cout << ct << "\t";
+    std::cout << "\n";
+    std::cout << "Actually Remaining:\t\t";
+    for (const size_t& ct : freezerStats.m_RemainingIngredientCts) std::cout << ct << "\t";
+    std::cout << "\n";
+    std::cout << "Calculated Remaining:\t";
+    for (size_t i = 0; i < freezerStats.m_RemainingIngredientCts.size(); i++)
+    {
+        size_t rem = freezerStats.m_InitialIngredientCts[i] + freezerStats.m_AddedIngredientCts[i] - freezerStats.m_TakenIngredientCts[i];
+        std::cout << rem << "\t";
+    }
+
+
+    std::cout << "\n\n";
+
+
+    std::cout << "/ WORKER STATS--------------------------------------------------------------- /\n";
+    std::cout << "SpongeBob - Tickets Completed:\t" << spongebobStats.m_TicketsCompleted << "\n";
+    std::cout << "SpongeBob - Menu Items:\t\t";
+    for (const auto& item : spongebobStats.m_CompletedMenuItems) {
+        std::cout << Menu::MenuItemNames[item.first] << ": " << item.second << "\t";
+    }
+    std::cout << "\n\n";
+
+    std::cout << "Patrick - Tickets Completed:\t" << patrickStats.m_TicketsCompleted << "\n";
+    std::cout << "Patrick - Menu Items:\t\t";
+    for (const auto& item : patrickStats.m_CompletedMenuItems) {
+        std::cout << Menu::MenuItemNames[item.first] << ": " << item.second << "\t";
+    }
+    std::cout << "\n\n";
+
+    std::cout << "/ TICKET GENERATOR STATS----------------------------------------------------- /\n";
+    std::cout << "Squidward - Tickets Generated:\t" << ticketGeneratorStats.m_TicketsGenerated << "\n";
+    std::cout << "Squidward - Menu Items:\t\t";
+    for (const auto& item : ticketGeneratorStats.m_MenuItemsGenerated)
+    {
+        std::cout << Menu::MenuItemNames[item.first] << ": " << item.second << "\t";
+    }
+    std::cout << "\n\n";
 
 }

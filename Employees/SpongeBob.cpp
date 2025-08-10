@@ -43,7 +43,8 @@ void SpongeBob::WakeUp()
     m_IngredientsCv.notify_all();
 }
 
-const SpongeBob::FrycookStats_t& SpongeBob::WorkerStats() {
+const FrycookStats_t& SpongeBob::WorkerStats() const
+{
     return m_FrycookStats;
 }
 
@@ -61,7 +62,6 @@ void SpongeBob::Work()
 
         PrepareOrder(nextTicket);
     }
-    PrintStatistics();
 }
 
 void SpongeBob::PrepareOrder(const Ticket& ticket)
@@ -130,16 +130,6 @@ Ticket SpongeBob::TryGetTicket() const
 
     return finalTicket;
 
-}
-
-void SpongeBob::PrintStatistics() const
-{
-    PrintLn(WhoAmI() + " finished " + std::to_string(m_FrycookStats.m_TicketsCompleted) + " tickets");
-
-    for (const auto& [menuItem, count] : m_FrycookStats.m_CompletedMenuItems)
-    {
-        PrintLn("\t * " + std::to_string(count) + " " + Menu::MenuItemNames[menuItem] + "(s)");
-    }
 }
 
 std::string SpongeBob::WhoAmI() const
