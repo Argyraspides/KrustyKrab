@@ -1,6 +1,6 @@
 # Krusty Krab Simulator
 
-This is just a quick project I did because a colleague of mine caught a race condition in my source code. Having never really written any multithreaded code before besides very rudimentary stuff, and feeling a bit embarassed,
+This is just a quick project I did because a colleague of mine caught a race condition in one of my pull requests. Having never really written any multithreaded code before besides very rudimentary stuff, and feeling a bit embarassed,
 I thought I would just make a classic producer-consumer application with Krusty Krab as the setting and give myself as many mines to step on as possible with condition variables, so I can get into the headspace of being more 
 careful about these things in future.
 
