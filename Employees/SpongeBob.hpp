@@ -26,7 +26,7 @@ public:
     ~SpongeBob() override;
     void PrintLn(const std::string& str) const;
     void WakeUp();
-    const FrycookStats_t& WorkerStats() const;
+    [[nodiscard]] const FrycookStats_t& WorkerStats() const;
 
 protected:
     void Work() override;
@@ -37,7 +37,6 @@ private:
     void PrepareOrder(const Ticket& ticket);
     void MakeKrabbyPatty();
     [[nodiscard]] Ticket TryGetTicket() const;
-    void PrintStatistics() const;
 
 private:
     std::weak_ptr<std::queue<Ticket>> m_TicketLine;

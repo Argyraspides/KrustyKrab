@@ -24,6 +24,7 @@ KrustyKrab::KrustyKrab() :
 KrustyKrab::~KrustyKrab()
 {
     StopWorkers();
+    PrintFinalStats();
     PrintLn("~KrustyKrab()");
 }
 
@@ -61,19 +62,22 @@ void KrustyKrab::StartWorkers()
     m_SpongeBob->Start();
 }
 
+void KrustyKrab::WaitUntilTicketsEmpty()
+{
+    PrintLn("The Krusty Krab is about to close. Waiting for Patrick & SpongeBob to finish their tickets ...");
+    {
+        std::unique_lock<std::mutex> lock(m_TicketLineMutex);
+        m_TicketCv.wait(lock, [this](){ return m_TicketLine->empty(); });
+    }
+    PrintLn("Patrick & SpongeBob have finished their tickets!");
+}
+
 void KrustyKrab::StopWorkers()
 {
     m_Squidward->Stop();
-
-    PrintLn("The Krusty Krab is about to close. Waiting for Patrick & SpongeBob to finish their tickets ...");
-    m_Freezer->WaitUntilReqsEmpty();
-    PrintLn("Patrick & SpongeBob have finished their tickets!");
-
-    m_Freezer->StopLoop();
-    m_Freezer->WakeUp();
-    m_Freezer->Stop();
-
     m_DeliveryTruck->Stop();
+
+    WaitUntilTicketsEmpty();
 
     m_Patrick->StopLoop();
     m_Patrick->WakeUp();
@@ -83,7 +87,9 @@ void KrustyKrab::StopWorkers()
     m_SpongeBob->WakeUp();
     m_SpongeBob->Stop();
 
-    PrintFinalStats();
+    m_Freezer->StopLoop();
+    m_Freezer->WakeUp();
+    m_Freezer->Stop();
 }
 
 void KrustyKrab::PrintLn(const std::string &msg)

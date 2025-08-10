@@ -63,12 +63,6 @@ void Freezer::WakeUp()
     m_IngredientsCv.notify_all();
 }
 
-void Freezer::WaitUntilReqsEmpty()
-{
-    std::unique_lock<std::mutex> lock(m_IngredientsMutex);
-    m_IngredientsCv.wait(lock, [this](){ return m_IngredientReqs.empty(); });
-}
-
 const FreezerStats_t& Freezer::FreezerStats()
 {
     return m_FreezerStats;
@@ -102,11 +96,6 @@ void Freezer::Work()
                 req.m_RequestFulfilled = true;
                 req.m_IngredientCv.notify_one();
             }
-        }
-
-        if (m_IngredientReqs.empty())
-        {
-            m_RequestsCv.notify_one();
         }
     }
 

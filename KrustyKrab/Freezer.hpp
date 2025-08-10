@@ -26,7 +26,6 @@ public:
     void AddIngredient(EIngredient i, size_t ct);
     std::mutex& IngredientsMutex();
     void WakeUp();
-    void WaitUntilReqsEmpty();
     const FreezerStats_t& FreezerStats();
 
 protected:

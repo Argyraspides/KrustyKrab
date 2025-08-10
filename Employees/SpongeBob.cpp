@@ -126,6 +126,8 @@ Ticket SpongeBob::TryGetTicket() const
         }
     }
 
+    // To notify the krusty krab that the tickets are now empty.
+    // Idk why but I don't like this. Why should spongebob give a shit about notifying the krusty krab?
     if (nowEmpty) m_TicketCv.notify_all();
 
     return finalTicket;

@@ -21,6 +21,7 @@ public:
     void Open();
     bool WorkersReady();
     void StartWorkers();
+    void WaitUntilTicketsEmpty();
     void StopWorkers();
 
 private:
