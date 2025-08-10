@@ -7,6 +7,13 @@
 #include "Worker.hpp"
 #include <functional>
 
+struct FreezerStats_t
+{
+    std::vector<size_t> m_InitialIngredientCts      {};
+    std::vector<size_t> m_AddedIngredientCts        {};
+    std::vector<size_t> m_RemainingIngredientCts    {};
+};
+
 class Freezer : public Worker
 {
 
@@ -16,10 +23,10 @@ public:
 
     void RequestIngredient(const IngredientRequest_t& ingredientReq);
     void AddIngredient(EIngredient i, size_t ct);
-    void AddIngredients(const std::vector<EIngredient>& is, const std::vector<size_t>& cts);
     std::mutex& IngredientsMutex();
     void WakeUp();
     void WaitUntilReqsEmpty();
+    const FreezerStats_t& FreezerStats();
 
 protected:
     void Work() override;
@@ -38,4 +45,6 @@ private:
     std::condition_variable m_RequestsCv;
 
     static constexpr size_t m_MaxIngredients = 100'000'000;
+
+    FreezerStats_t m_FreezerStats;
 };

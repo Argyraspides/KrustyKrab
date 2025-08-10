@@ -6,6 +6,11 @@
 #include "Ticket.hpp"
 #include "Freezer.hpp"
 
+struct FrycookStats_t {
+    unsigned long long int m_TicketsCompleted;
+    std::unordered_map<Menu::EMenuItem, size_t> m_CompletedMenuItems;
+};
+
 class SpongeBob : public Worker
 {
 
@@ -20,6 +25,7 @@ public:
     ~SpongeBob() override;
     void PrintLn(const std::string& str) const;
     void WakeUp();
+    const FrycookStats_t& WorkerStats();
 
 protected:
     void Work() override;
@@ -44,7 +50,6 @@ private:
     // I'M SORRY, PATRICK!
     bool m_IsActuallyPatrick;
 
-    unsigned long long int m_TicketsCompleted;
-    std::unordered_map<Menu::EMenuItem, size_t> m_CompletedMenuItems;
+    FrycookStats_t m_FrycookStats;
 
 };

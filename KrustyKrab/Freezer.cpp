@@ -4,17 +4,19 @@
 #include "Freezer.hpp"
 #include <exception>
 Freezer::Freezer() :
-    m_Ingredients(std::vector<size_t>(EIngredient::INGREDIENT_COUNT)),
-    m_IngredientsMutex(std::mutex()),
-    m_IngredientsCv(std::condition_variable()),
-    m_IngredientReqs(std::queue<IngredientRequest_t>()),
-    m_RequestsCv(std::condition_variable())
+    m_Ingredients       (std::vector<size_t>(EIngredient::INGREDIENT_COUNT)),
+    m_IngredientsMutex  (std::mutex()),
+    m_IngredientsCv     (std::condition_variable()),
+    m_IngredientReqs    (std::queue<IngredientRequest_t>()),
+    m_RequestsCv        (std::condition_variable()),
+    m_FreezerStats      (FreezerStats_t())
 {
     InitDefaultIngredientCount();
 }
 
 Freezer::~Freezer()
 {
+    m_FreezerStats.m_RemainingIngredientCts = m_Ingredients;
     std::cout << "~Freezer()\n";
 }
 
@@ -27,6 +29,8 @@ void Freezer::InitDefaultIngredientCount() {
         constexpr size_t INIT_INGREDIENT_CT = 100;
         ingredientCt = INIT_INGREDIENT_CT;
     }
+
+    m_FreezerStats.m_InitialIngredientCts = m_Ingredients;
 
 }
 
@@ -45,6 +49,8 @@ void Freezer::AddIngredient(EIngredient i, size_t count)
     if (newVal > m_MaxIngredients) return;
 
     m_Ingredients[i] = newVal;
+
+    m_FreezerStats.m_AddedIngredientCts[i] += count;
 }
 
 std::mutex& Freezer::IngredientsMutex()
@@ -61,6 +67,11 @@ void Freezer::WaitUntilReqsEmpty()
 {
     std::unique_lock<std::mutex> lock(m_IngredientsMutex);
     m_IngredientsCv.wait(lock, [this](){ return m_IngredientReqs.empty(); });
+}
+
+const FreezerStats_t& Freezer::FreezerStats()
+{
+    return m_FreezerStats;
 }
 
 // TODO: Current basically a busy wait despite condition variable. If a request cannot be fulfilled,

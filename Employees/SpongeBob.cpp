@@ -22,8 +22,7 @@ SpongeBob::SpongeBob(
     m_Freezer(std::move(freezer)),
     m_IngredientsCv(std::condition_variable()),
     m_IsActuallyPatrick(IsActuallyPatrick),
-    m_TicketsCompleted(0),
-    m_CompletedMenuItems(0)
+    m_FrycookStats(FrycookStats_t())
 {
    PrintLn(WhoAmI() + "()");
 }
@@ -42,6 +41,10 @@ void SpongeBob::WakeUp()
 {
     m_TicketCv.notify_all();
     m_IngredientsCv.notify_all();
+}
+
+const SpongeBob::FrycookStats_t& SpongeBob::WorkerStats() {
+    return m_FrycookStats;
 }
 
 void SpongeBob::Work()
@@ -69,12 +72,12 @@ void SpongeBob::PrepareOrder(const Ticket& ticket)
         {
             case Menu::EMenuItem::KrabbyPatty:
                 MakeKrabbyPatty();
-                m_CompletedMenuItems[Menu::EMenuItem::KrabbyPatty]++;
+                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::KrabbyPatty]++;
                 break;
             default:;
         }
-        ++m_TicketsCompleted;
     }
+    m_FrycookStats.m_TicketsCompleted++;
 }
 
 void SpongeBob::MakeKrabbyPatty()
@@ -131,9 +134,9 @@ Ticket SpongeBob::TryGetTicket() const
 
 void SpongeBob::PrintStatistics() const
 {
-    PrintLn(WhoAmI() + " finished " + std::to_string(m_TicketsCompleted) + " tickets");
+    PrintLn(WhoAmI() + " finished " + std::to_string(m_FrycookStats.m_TicketsCompleted) + " tickets");
 
-    for (const auto& [menuItem, count] : m_CompletedMenuItems)
+    for (const auto& [menuItem, count] : m_FrycookStats.m_CompletedMenuItems)
     {
         PrintLn("\t * " + std::to_string(count) + " " + Menu::MenuItemNames[menuItem] + "(s)");
     }

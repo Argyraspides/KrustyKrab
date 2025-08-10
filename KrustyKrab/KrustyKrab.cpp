@@ -90,3 +90,13 @@ void KrustyKrab::PrintLn(const std::string &msg)
 {
     std::cout << RED_ANSI_SEQ << msg << "\n" << RESET_ANSI_SEQ;
 }
+
+void KrustyKrab::PrintFinalStats()
+{
+    const FrycookStats_t& spongebobStats = m_SpongeBob->WorkerStats();
+    const FrycookStats_t& patrickStats = m_Patrick->WorkerStats();
+    const RandomTicketStats_t ticketGeneratorStats = m_Squidward->TicketStats();
+    const FreezerStats_t freezerStats = m_Freezer->
+
+
+}

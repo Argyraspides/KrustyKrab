@@ -25,6 +25,7 @@ public:
 
 private:
     void PrintLn(const std::string& msg);
+    void PrintFinalStats();
 
 private:
 
