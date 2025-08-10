@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <memory>
-#include "ConcurrentQueue.hpp"
 #include "Worker.hpp"
 #include "Ticket.hpp"
 #include "Freezer.hpp"

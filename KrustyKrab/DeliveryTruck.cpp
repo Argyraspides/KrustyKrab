@@ -3,6 +3,7 @@
 //
 #include "DeliveryTruck.hpp"
 #include "EIngredient.hpp"
+#include <iostream>
 
 DeliveryTruck::DeliveryTruck(std::weak_ptr<Freezer> freezer) :
 m_Freezer(std::move(freezer)),

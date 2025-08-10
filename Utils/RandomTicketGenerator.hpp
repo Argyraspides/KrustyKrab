@@ -5,7 +5,6 @@
 #pragma once
 
 #include "MenuItemFactory.hpp"
-#include "ConcurrentQueue.hpp"
 #include "Ticket.hpp"
 #include "Worker.hpp"
 #include <memory>

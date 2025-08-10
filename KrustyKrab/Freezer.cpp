@@ -2,7 +2,8 @@
 // Created by gaugamela on 7/20/25.
 //
 #include "Freezer.hpp"
-#include <exception>
+#include <iostream>
+
 Freezer::Freezer() :
     m_Ingredients       (std::vector<size_t>(EIngredient::INGREDIENT_COUNT)),
     m_IngredientsMutex  (std::mutex()),

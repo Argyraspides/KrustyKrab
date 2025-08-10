@@ -2,10 +2,12 @@
 // Created by gaugamela on 7/19/25.
 //
 #pragma once
-#include "ConcurrentQueue.hpp"
 #include "EIngredient.hpp"
 #include "Worker.hpp"
 #include <functional>
+#include <mutex>
+#include <queue>
+#include <condition_variable>
 
 struct FreezerStats_t
 {

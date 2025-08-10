@@ -2,6 +2,9 @@
 // Created by gaugamela on 7/19/25.
 //
 #pragma once
+#include <array>
+#include <string>
+#include <condition_variable>
 
 enum EIngredient {
     Bun = 0,
