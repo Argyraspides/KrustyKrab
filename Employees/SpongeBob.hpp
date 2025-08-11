@@ -25,17 +25,60 @@ public:
     ~SpongeBob() override;
     void PrintLn(const std::string& str) const;
     void WakeUp();
-    [[nodiscard]] const FrycookStats_t& WorkerStats() const;
+    const FrycookStats_t& WorkerStats() const;
 
 protected:
     void Work() override;
 
 private:
     // I'm sorry, Patrick ...
-    [[nodiscard]] std::string WhoAmI() const;
+    std::string WhoAmI() const;
     void PrepareOrder(const Ticket& ticket);
+    Ticket TryGetTicket() const;
+
+
+private:
+
+    // Original Krabby Patty variations
     void MakeKrabbyPatty();
-    [[nodiscard]] Ticket TryGetTicket() const;
+    void MakeDoubleKrabbyPatty();
+    void MakeTripleKrabbyPattySupreme();
+    void MakeKrabbyPattyDeluxe();
+    void MakeMonsterKrabbyPatty();
+    void MakeKrabbyPattyPizza();
+
+    // Other burgers
+    void MakeBarnacleBurger();
+    void MakePlanktonsBurger();
+    void MakeChumBucket();
+    void MakeGoldenSpatula();
+
+    // Beverages
+    void MakeKelpShake();
+
+    // Sides and salads
+    void MakeSeaweedSalad();
+    void MakeBarnacleRings();
+    void MakeKrustyCrab();
+
+    // Sauces and condiments
+    void MakeVolcanoSauce();
+    void MakeTarTarSauce();
+
+    // Desserts
+    void MakeSundae();
+    void MakeIceCream();
+
+    // Specialty items
+    void MakeJellyfishJelly();
+    void MakeGaryTreat();
+
+    // Chum-based items
+    void MakeChumFritters();
+    void MakeChumOnAStick();
+
+    // Snacks
+    void MakeKelpJerky();
 
 private:
     std::weak_ptr<std::queue<Ticket>> m_TicketLine;

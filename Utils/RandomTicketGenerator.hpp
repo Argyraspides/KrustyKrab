@@ -29,13 +29,12 @@ public:
     m_MaxRandomTickets(5),
     m_GenerationWaitTimeMs(std::chrono::milliseconds(1000)),
     m_UniformIntDist(std::uniform_int_distribution<size_t>(m_MinRandomTickets, m_MaxRandomTickets)),
-    m_MenuItemDist(std::uniform_int_distribution<size_t>(0, Menu::EMenuItem::MENU_ITEM_COUNT - 1)),
+    m_MenuItemDist(std::uniform_int_distribution<size_t>(0, static_cast<size_t>(Menu::EMenuItem::MENU_ITEM_COUNT) - 1)),
     m_MerseneTwister(std::mt19937(m_RandomDevice())),
     m_RandomItemFuncs(std::vector<std::function<Menu::MenuItem_t()>>()),
     m_RandomTicketStats(RandomTicketStats_t())
     {
         std::cout << "RandomTicketGenerator()" << "\n";
-        InitRandomMenuItemFuncs();
     }
 
     ~RandomTicketGenerator()
@@ -62,7 +61,7 @@ protected:
             {
                 // Get random factory function from MenuItemFactory
                 size_t randomItemIndex = m_MenuItemDist(m_MerseneTwister);
-                Menu::MenuItem_t randomItem = m_RandomItemFuncs[randomItemIndex]();
+                Menu::MenuItem_t randomItem = MenuItemFactory::CreateMenuItem(static_cast<Menu::EMenuItem>(randomItemIndex));
                 randomTicket.m_MenuItems.push_back(randomItem);
 
                 // Add to generated statistics
@@ -80,14 +79,6 @@ protected:
             m_RandomTicketStats.m_TicketsGenerated++;
         }
 
-    }
-
-private:
-    void InitRandomMenuItemFuncs()
-    {
-        m_RandomItemFuncs.reserve(Menu::EMenuItem::MENU_ITEM_COUNT);
-
-        m_RandomItemFuncs.emplace_back(MenuItemFactory::MakeKrabbyPatty);
     }
 
 private:

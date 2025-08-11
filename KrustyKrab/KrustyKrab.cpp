@@ -2,6 +2,7 @@
 // Created by gaugamela on 7/18/25.
 //
 
+#include <iomanip>
 #include "KrustyKrab.hpp"
 #include "MenuItemFactory.hpp"
 
@@ -105,53 +106,104 @@ void KrustyKrab::PrintFinalStats() const
     const FreezerStats_t freezerStats = m_Freezer->FreezerStats();
 
     std::cout << std::endl;
+    std::cout << "================================================================================\n";
+    std::cout << "                            KRUSTY KRAB FINAL STATISTICS\n";
+    std::cout << "================================================================================\n\n";
 
-    std::cout << "/ INGREDIENT STATS----------------------------------------------------------- /\n";
-    std::cout << "Initial:\t\t\t\t";
-    for (const size_t& ct : freezerStats.m_InitialIngredientCts) std::cout << ct << "\t";
-    std::cout << "\n";
-    std::cout << "Added:\t\t\t\t\t";
-    for (const size_t& ct : freezerStats.m_AddedIngredientCts) std::cout << ct << "\t";
-    std::cout << "\n";
-    std::cout << "Taken:\t\t\t\t\t";
-    for (const size_t& ct : freezerStats.m_TakenIngredientCts) std::cout << ct << "\t";
-    std::cout << "\n";
-    std::cout << "Actually Remaining:\t\t";
-    for (const size_t& ct : freezerStats.m_RemainingIngredientCts) std::cout << ct << "\t";
-    std::cout << "\n";
-    std::cout << "Calculated Remaining:\t";
+    // INGREDIENT STATS
+    std::cout << "┌─ INGREDIENT INVENTORY ─────────────────────────────────────────────────────┐\n";
+    std::cout << "│                                                                            │\n";
+
+    // Header
+    std::cout << "│ Ingredient          │ Initial │ Added   │ Taken   │ Remaining │ Calculated│\n";
+    std::cout << "│─────────────────────┼─────────┼─────────┼─────────┼───────────┼───────────│\n";
+
     for (size_t i = 0; i < freezerStats.m_RemainingIngredientCts.size(); i++)
     {
-        size_t rem = freezerStats.m_InitialIngredientCts[i] + freezerStats.m_AddedIngredientCts[i] - freezerStats.m_TakenIngredientCts[i];
-        std::cout << rem << "\t";
+        size_t calculatedRemaining = freezerStats.m_InitialIngredientCts[i] +
+                                   freezerStats.m_AddedIngredientCts[i] -
+                                   freezerStats.m_TakenIngredientCts[i];
+
+        std::cout << "│ " << std::setw(19) << std::left << Menu::IngredientNames[i]
+                  << " │ " << std::setw(7) << std::right << freezerStats.m_InitialIngredientCts[i]
+                  << " │ " << std::setw(7) << std::right << freezerStats.m_AddedIngredientCts[i]
+                  << " │ " << std::setw(7) << std::right << freezerStats.m_TakenIngredientCts[i]
+                  << " │ " << std::setw(9) << std::right << freezerStats.m_RemainingIngredientCts[i]
+                  << " │ " << std::setw(9) << std::right << calculatedRemaining << " │\n";
     }
+    std::cout << "└────────────────────────────────────────────────────────────────────────────┘\n\n";
 
+    // WORKER STATS
+    std::cout << "┌─ FRYCOOK PERFORMANCE ──────────────────────────────────────────────────────┐\n";
+    std::cout << "│                                                                            │\n";
 
-    std::cout << "\n\n";
+    // SpongeBob Stats
+    std::cout << "│ 🧽 SPONGEBOB SQUAREPANTS                                                   │\n";
+    std::cout << "│   Tickets Completed: " << std::setw(3) << spongebobStats.m_TicketsCompleted << "                                                    │\n";
+    std::cout << "│   Menu Items Prepared:                                                     │\n";
 
-
-    std::cout << "/ WORKER STATS--------------------------------------------------------------- /\n";
-    std::cout << "SpongeBob - Tickets Completed:\t" << spongebobStats.m_TicketsCompleted << "\n";
-    std::cout << "SpongeBob - Menu Items:\t\t";
     for (const auto& item : spongebobStats.m_CompletedMenuItems) {
-        std::cout << Menu::MenuItemNames[item.first] << ": " << item.second << "\t";
+        std::cout << "│     • " << std::setw(25) << std::left << Menu::MenuItemNames[static_cast<size_t>(item.first)]
+                  << ": " << std::setw(3) << std::right << item.second << " items                                    │\n";
     }
-    std::cout << "\n\n";
 
-    std::cout << "Patrick - Tickets Completed:\t" << patrickStats.m_TicketsCompleted << "\n";
-    std::cout << "Patrick - Menu Items:\t\t";
+    std::cout << "│                                                                            │\n";
+
+    // Patrick Stats
+    std::cout << "│ ⭐ PATRICK STAR                                                            │\n";
+    std::cout << "│   Tickets Completed: " << std::setw(3) << patrickStats.m_TicketsCompleted << "                                                    │\n";
+    std::cout << "│   Menu Items Prepared:                                                     │\n";
+
+    if (patrickStats.m_CompletedMenuItems.empty()) {
+        std::cout << "│     • No items completed                                                   │\n";
+    } else {
+        for (const auto& item : patrickStats.m_CompletedMenuItems) {
+            std::cout << "│     • " << std::setw(25) << std::left << Menu::MenuItemNames[static_cast<size_t>(item.first)]
+                      << ": " << std::setw(3) << std::right << item.second << " items                                    │\n";
+        }
+    }
+
+    std::cout << "└────────────────────────────────────────────────────────────────────────────┘\n\n";
+
+    // TICKET GENERATOR STATS
+    std::cout << "┌─ ORDER MANAGEMENT ─────────────────────────────────────────────────────────┐\n";
+    std::cout << "│                                                                            │\n";
+    std::cout << "│ 🦑 SQUIDWARD TENTACLES (Order Manager)                                    │\n";
+    std::cout << "│   Total Tickets Generated: " << std::setw(3) << ticketGeneratorStats.m_TicketsGenerated << "                                          │\n";
+    std::cout << "│   Menu Items Requested:                                                    │\n";
+
+    for (const auto& item : ticketGeneratorStats.m_MenuItemsGenerated) {
+        std::cout << "│     • " << std::setw(25) << std::left << Menu::MenuItemNames[static_cast<size_t>(item.first)]
+                  << ": " << std::setw(3) << std::right << item.second << " orders                                   │\n";
+    }
+
+    std::cout << "└────────────────────────────────────────────────────────────────────────────┘\n\n";
+
+    // SUMMARY STATS
+    std::cout << "┌─ SUMMARY ──────────────────────────────────────────────────────────────────┐\n";
+    std::cout << "│                                                                            │\n";
+
+    size_t totalTicketsCompleted = spongebobStats.m_TicketsCompleted + patrickStats.m_TicketsCompleted;
+    size_t totalItemsCompleted = 0;
+    for (const auto& item : spongebobStats.m_CompletedMenuItems) {
+        totalItemsCompleted += item.second;
+    }
     for (const auto& item : patrickStats.m_CompletedMenuItems) {
-        std::cout << Menu::MenuItemNames[item.first] << ": " << item.second << "\t";
+        totalItemsCompleted += item.second;
     }
-    std::cout << "\n\n";
 
-    std::cout << "/ TICKET GENERATOR STATS----------------------------------------------------- /\n";
-    std::cout << "Squidward - Tickets Generated:\t" << ticketGeneratorStats.m_TicketsGenerated << "\n";
-    std::cout << "Squidward - Menu Items:\t\t";
-    for (const auto& item : ticketGeneratorStats.m_MenuItemsGenerated)
-    {
-        std::cout << Menu::MenuItemNames[item.first] << ": " << item.second << "\t";
-    }
-    std::cout << "\n\n";
+    double completionRate = ticketGeneratorStats.m_TicketsGenerated > 0 ?
+                           (static_cast<double>(totalTicketsCompleted) / ticketGeneratorStats.m_TicketsGenerated) * 100.0 : 0.0;
+
+    std::cout << "│   Total Orders Generated:    " << std::setw(6) << ticketGeneratorStats.m_TicketsGenerated << "                                      │\n";
+    std::cout << "│   Total Orders Completed:    " << std::setw(6) << totalTicketsCompleted << "                                      │\n";
+    std::cout << "│   Total Items Prepared:      " << std::setw(6) << totalItemsCompleted << "                                      │\n";
+    std::cout << "│   Completion Rate:           " << std::setw(5) << std::fixed << std::setprecision(1) << completionRate << "%                                     │\n";
+    std::cout << "│                                                                            │\n";
+    std::cout << "└────────────────────────────────────────────────────────────────────────────┘\n\n";
+
+    std::cout << "================================================================================\n";
+    std::cout << "                        \"I'm ready, I'm ready, I'm ready!\"\n";
+    std::cout << "================================================================================\n";
 
 }

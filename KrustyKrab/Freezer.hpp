@@ -2,7 +2,7 @@
 // Created by gaugamela on 7/19/25.
 //
 #pragma once
-#include "EIngredient.hpp"
+#include "IngredientRequest.hpp"
 #include "Worker.hpp"
 #include <functional>
 #include <mutex>
@@ -25,7 +25,7 @@ public:
     ~Freezer();
 
     void RequestIngredient(const IngredientRequest_t& ingredientReq);
-    void AddIngredient(EIngredient i, size_t ct);
+    void AddIngredient(Menu::EIngredient i, size_t ct);
     std::mutex& IngredientsMutex();
     void WakeUp();
     const FreezerStats_t& FreezerStats();

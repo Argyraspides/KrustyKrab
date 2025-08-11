@@ -29,6 +29,6 @@ private:
     std::uniform_int_distribution<size_t> m_IngredientCtDist;
     std::uniform_int_distribution<size_t> m_IngredientTypeDist;
 
-    std::array<size_t, EIngredient::INGREDIENT_COUNT> m_DeliveredIngredients;
+    std::array<size_t, static_cast<size_t>(Menu::EIngredient::INGREDIENT_COUNT)> m_DeliveredIngredients;
 
 };

@@ -5,7 +5,7 @@
 #include <iostream>
 
 Freezer::Freezer() :
-    m_Ingredients       (std::vector<size_t>(EIngredient::INGREDIENT_COUNT)),
+    m_Ingredients       (std::vector<size_t>(static_cast<size_t>(Menu::EIngredient::INGREDIENT_COUNT))),
     m_IngredientsMutex  (std::mutex()),
     m_IngredientsCv     (std::condition_variable()),
     m_IngredientReqs    (std::queue<IngredientRequest_t>()),
@@ -31,8 +31,8 @@ void Freezer::InitDefaultIngredientCount() {
     }
 
     m_FreezerStats.m_InitialIngredientCts = m_Ingredients;
-    m_FreezerStats.m_AddedIngredientCts = std::vector<size_t>(EIngredient::INGREDIENT_COUNT);
-    m_FreezerStats.m_TakenIngredientCts = std::vector<size_t>(EIngredient::INGREDIENT_COUNT);
+    m_FreezerStats.m_AddedIngredientCts = std::vector<size_t>(static_cast<size_t>(Menu::EIngredient::INGREDIENT_COUNT));
+    m_FreezerStats.m_TakenIngredientCts = std::vector<size_t>(static_cast<size_t>(Menu::EIngredient::INGREDIENT_COUNT));
 }
 
 void Freezer::RequestIngredient(const IngredientRequest_t& ingredientReq)
@@ -42,16 +42,16 @@ void Freezer::RequestIngredient(const IngredientRequest_t& ingredientReq)
     m_IngredientsCv.notify_all();
 }
 
-void Freezer::AddIngredient(EIngredient i, size_t count)
+void Freezer::AddIngredient(Menu::EIngredient i, size_t count)
 {
     std::unique_lock<std::mutex> lock(m_IngredientsMutex);
 
-    size_t newVal = m_Ingredients[i] + count;
+    size_t newVal = m_Ingredients[static_cast<size_t>(i)] + count;
     if (newVal > m_MaxIngredients) return;
 
-    m_Ingredients[i] = newVal;
+    m_Ingredients[static_cast<size_t>(i)] = newVal;
 
-    m_FreezerStats.m_AddedIngredientCts[i] += count;
+    m_FreezerStats.m_AddedIngredientCts[static_cast<size_t>(i)] += count;
 }
 
 std::mutex& Freezer::IngredientsMutex()
@@ -87,12 +87,12 @@ void Freezer::Work()
             if (m_IngredientReqs.empty()) break;
 
             IngredientRequest_t& req = m_IngredientReqs.front();
-            if (m_Ingredients[req.m_Ingredient] >= req.m_IngredientCount)
+            if (m_Ingredients[static_cast<size_t>(req.m_Ingredient)] >= req.m_IngredientCount)
             {
                 m_IngredientReqs.pop();
 
-                m_Ingredients[req.m_Ingredient] -= req.m_IngredientCount;
-                m_FreezerStats.m_TakenIngredientCts[req.m_Ingredient] += req.m_IngredientCount;
+                m_Ingredients[static_cast<size_t>(req.m_Ingredient)] -= req.m_IngredientCount;
+                m_FreezerStats.m_TakenIngredientCts[static_cast<size_t>(req.m_Ingredient)] += req.m_IngredientCount;
 
                 req.m_RequestFulfilled = true;
                 req.m_IngredientCv.notify_one();
