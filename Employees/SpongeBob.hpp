@@ -35,10 +35,10 @@ private:
     std::string WhoAmI() const;
     void PrepareOrder(const Ticket& ticket);
     Ticket TryGetTicket() const;
+    void GetIngredients(const std::vector<Menu::EIngredient>& ingredients, const std::vector<size_t>& ingredientCount);
 
 
 private:
-
     // Original Krabby Patty variations
     void MakeKrabbyPatty();
     void MakeDoubleKrabbyPatty();
