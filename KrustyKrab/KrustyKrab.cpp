@@ -76,7 +76,6 @@ void KrustyKrab::WaitUntilTicketsEmpty()
 void KrustyKrab::StopWorkers()
 {
     m_Squidward->Stop();
-    m_DeliveryTruck->Stop();
 
     WaitUntilTicketsEmpty();
 
@@ -91,6 +90,8 @@ void KrustyKrab::StopWorkers()
     m_Freezer->StopLoop();
     m_Freezer->WakeUp();
     m_Freezer->Stop();
+
+    m_DeliveryTruck->Stop();
 }
 
 void KrustyKrab::PrintLn(const std::string &msg)

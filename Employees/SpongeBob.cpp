@@ -56,269 +56,13 @@ void SpongeBob::Work() {
 }
 
 void SpongeBob::PrepareOrder(const Ticket &ticket) {
-    for (const auto &menuItem: ticket.m_MenuItems) {
-        switch (menuItem.m_MenuItemName) {
-            case Menu::EMenuItem::KrabbyPatty:
-                MakeKrabbyPatty();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::KrabbyPatty]++;
-                break;
-            case Menu::EMenuItem::DoubleKrabbyPatty:
-                MakeDoubleKrabbyPatty();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::DoubleKrabbyPatty]++;
-                break;
-            case Menu::EMenuItem::TripleKrabbyPattySupreme:
-                MakeTripleKrabbyPattySupreme();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::TripleKrabbyPattySupreme]++;
-                break;
-            case Menu::EMenuItem::KrabbyPattyDeluxe:
-                MakeKrabbyPattyDeluxe();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::KrabbyPattyDeluxe]++;
-                break;
-            case Menu::EMenuItem::BarnacleBurger:
-                MakeBarnacleBurger();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::BarnacleBurger]++;
-                break;
-            case Menu::EMenuItem::KelpShake:
-                MakeKelpShake();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::KelpShake]++;
-                break;
-            case Menu::EMenuItem::SeaweedSalad:
-                MakeSeaweedSalad();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::SeaweedSalad]++;
-                break;
-            case Menu::EMenuItem::BarnacleRings:
-                MakeBarnacleRings();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::BarnacleRings]++;
-                break;
-            case Menu::EMenuItem::KrustyCrab:
-                MakeKrustyCrab();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::KrustyCrab]++;
-                break;
-            case Menu::EMenuItem::PlanktonsBurger:
-                MakePlanktonsBurger();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::PlanktonsBurger]++;
-                break;
-            case Menu::EMenuItem::ChumBucket:
-                MakeChumBucket();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::ChumBucket]++;
-                break;
-            case Menu::EMenuItem::GoldenSpatula:
-                MakeGoldenSpatula();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::GoldenSpatula]++;
-                break;
-            case Menu::EMenuItem::MonsterKrabbyPatty:
-                MakeMonsterKrabbyPatty();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::MonsterKrabbyPatty]++;
-                break;
-            case Menu::EMenuItem::KrabbyPattyPizza:
-                MakeKrabbyPattyPizza();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::KrabbyPattyPizza]++;
-                break;
-            case Menu::EMenuItem::VolcanoSauce:
-                MakeVolcanoSauce();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::VolcanoSauce]++;
-                break;
-            case Menu::EMenuItem::JellyfishJelly:
-                MakeJellyfishJelly();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::JellyfishJelly]++;
-                break;
-            case Menu::EMenuItem::GaryTreat:
-                MakeGaryTreat();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::GaryTreat]++;
-                break;
-            case Menu::EMenuItem::Sundae:
-                MakeSundae();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::Sundae]++;
-                break;
-            case Menu::EMenuItem::IceCream:
-                MakeIceCream();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::IceCream]++;
-                break;
-            case Menu::EMenuItem::ChumFritters:
-                MakeChumFritters();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::ChumFritters]++;
-                break;
-            case Menu::EMenuItem::KelpJerky:
-                MakeKelpJerky();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::KelpJerky]++;
-                break;
-            case Menu::EMenuItem::ChumOnAStick:
-                MakeChumOnAStick();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::ChumOnAStick]++;
-                break;
-            case Menu::EMenuItem::TarTarSauce:
-                MakeTarTarSauce();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::TarTarSauce]++;
-                break;
-            default:
-                // Handle unknown menu items - maybe log an error or fall back to Krabby Patty
-                MakeKrabbyPatty();
-                m_FrycookStats.m_CompletedMenuItems[Menu::EMenuItem::KrabbyPatty]++;
-                break;
-        }
+    for (auto &menuItem: ticket.m_MenuItems) {
+        // Just assume that by getting the ingredients, SpongeBob has finished the order lol
+        //  TODO: Maybe add an assembly time delay in future?
+        GetIngredients(menuItem.m_Ingredients, menuItem.m_IngredientCounts);
+        m_FrycookStats.m_CompletedMenuItems[menuItem.m_MenuItemName]++;
     }
     m_FrycookStats.m_TicketsCompleted++;
-}
-
-void SpongeBob::MakeKrabbyPatty() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetKrabbyPattyIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetKrabbyPattyIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeDoubleKrabbyPatty() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetDoubleKrabbyPattyIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetDoubleKrabbyPattyIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeTripleKrabbyPattySupreme() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetTripleKrabbyPattySupremeIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetTripleKrabbyPattySupremeIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeKrabbyPattyDeluxe() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetKrabbyPattyDeluxeIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetKrabbyPattyDeluxeIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeBarnacleBurger() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetBarnacleBurgerIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetBarnacleBurgerIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeKelpShake() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetKelpShakeIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetKelpShakeIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeSeaweedSalad() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetSeaweedSaladIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetSeaweedSaladIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeBarnacleRings() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetBarnacleRingsIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetBarnacleRingsIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeKrustyCrab() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetKrustyCrabIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetKrustyCrabIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakePlanktonsBurger() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetPlanktonsBurgerIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetPlanktonsBurgerIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeChumBucket() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetChumBucketIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetChumBucketIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeGoldenSpatula() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetGoldenSpatulaIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetGoldenSpatulaIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeMonsterKrabbyPatty() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetMonsterKrabbyPattyIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetMonsterKrabbyPattyIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeKrabbyPattyPizza() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetKrabbyPattyPizzaIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetKrabbyPattyPizzaIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeVolcanoSauce() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetVolcanoSauceIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetVolcanoSauceIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeJellyfishJelly() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetJellyfishJellyIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetJellyfishJellyIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeGaryTreat() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetGaryTreatIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetGaryTreatIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeSundae() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetSundaeIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetSundaeIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeIceCream() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetIceCreamIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetIceCreamIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeChumFritters() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetChumFrittersIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetChumFrittersIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeKelpJerky() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetKelpJerkyIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetKelpJerkyIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeChumOnAStick() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetChumOnAStickIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetChumOnAStickIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
-}
-
-void SpongeBob::MakeTarTarSauce() {
-    const std::vector<Menu::EIngredient> &ingredients = MenuItemFactory::GetTarTarSauceIngredients();
-    const std::vector<size_t> &ingredientCount = MenuItemFactory::GetTarTarSauceIngredientCounts();
-
-    GetIngredients(ingredients, ingredientCount);
 }
 
 Ticket SpongeBob::TryGetTicket() const {
@@ -329,7 +73,8 @@ Ticket SpongeBob::TryGetTicket() const {
         return finalTicket;
     }
 
-    bool nowEmpty = false; {
+    bool nowEmpty = false;
+    {
         std::unique_lock<std::mutex> lock(m_TicketLineMutex);
         m_TicketCv.wait(lock, [&]() { return !ticketLine->empty() || !m_Running; });
 
@@ -360,6 +105,9 @@ void SpongeBob::GetIngredients(const std::vector<Menu::EIngredient> &ingredients
         freezer->RequestIngredient(ir);
 
         std::unique_lock<std::mutex> lock(freezer->IngredientsMutex());
+
+        // TODO GAUGAMELA() { If the krusty krab closes, and so the delivery truck stops, if we do not have enough ingredients for the final orders,
+        // we will be waiting here forever .... since the krusty krab waits for all tickets to be finished first }
         m_IngredientsCv.wait(lock, [&]() { return requestFulfilled || !m_Running; });
     }
 }
