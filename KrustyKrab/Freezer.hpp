@@ -4,23 +4,23 @@
 #pragma once
 #include "IngredientRequest.hpp"
 #include "Worker.hpp"
+#include <condition_variable>
 #include <functional>
 #include <mutex>
 #include <queue>
-#include <condition_variable>
 
 struct FreezerStats_t
 {
-    std::vector<size_t> m_InitialIngredientCts      {};
-    std::vector<size_t> m_AddedIngredientCts        {};
-    std::vector<size_t> m_TakenIngredientCts        {};
-    std::vector<size_t> m_RemainingIngredientCts    {};
+    std::vector<size_t> m_InitialIngredientCts{};
+    std::vector<size_t> m_AddedIngredientCts{};
+    std::vector<size_t> m_TakenIngredientCts{};
+    std::vector<size_t> m_RemainingIngredientCts{};
 };
 
 class Freezer : public Worker
 {
 
-public:
+  public:
     Freezer();
     ~Freezer();
 
@@ -30,14 +30,13 @@ public:
     void WakeUp();
     const FreezerStats_t& FreezerStats();
 
-protected:
+  protected:
     void Work() override;
 
-private:
+  private:
     void InitDefaultIngredientCount();
 
-
-private:
+  private:
     std::vector<size_t> m_Ingredients;
     std::mutex m_IngredientsMutex;
 

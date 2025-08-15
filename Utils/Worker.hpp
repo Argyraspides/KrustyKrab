@@ -3,14 +3,17 @@
 //
 
 #pragma once
-#include <thread>
 #include <chrono>
+#include <thread>
 
-class Worker {
+class Worker
+{
 
-public:
-
-    Worker() : m_Running(false) {}
+  public:
+    Worker()
+        : m_Running(false)
+    {
+    }
 
     virtual ~Worker()
     {
@@ -38,12 +41,10 @@ public:
         m_Running = false;
     }
 
-protected:
-
+  protected:
     virtual void Work() {};
     bool m_Running;
 
-private:
-
+  private:
     std::thread m_WorkerThread;
 };

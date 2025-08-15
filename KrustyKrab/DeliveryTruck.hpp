@@ -2,21 +2,20 @@
 // Created by gaugamela on 7/26/25.
 //
 #pragma once
-#include "Worker.hpp"
 #include "Freezer.hpp"
+#include "Worker.hpp"
 #include <condition_variable>
 #include <random>
 
 class DeliveryTruck : public Worker
 {
-public:
+  public:
     DeliveryTruck(std::weak_ptr<Freezer> freezer);
     ~DeliveryTruck();
 
     void Work() override;
 
-private:
-
+  private:
     std::weak_ptr<Freezer> m_Freezer;
 
     std::condition_variable m_IngredientCv;
@@ -30,5 +29,4 @@ private:
     std::uniform_int_distribution<size_t> m_IngredientTypeDist;
 
     std::array<size_t, static_cast<size_t>(Menu::EIngredient::INGREDIENT_COUNT)> m_DeliveredIngredients;
-
 };

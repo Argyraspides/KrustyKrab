@@ -3,18 +3,18 @@
 //
 
 #pragma once
-#include <memory>
-#include <condition_variable>
-#include "SpongeBob.hpp"
-#include "Patrick.hpp"
-#include "Squidward.hpp"
-#include "Freezer.hpp"
 #include "DeliveryTruck.hpp"
+#include "Freezer.hpp"
+#include "Patrick.hpp"
+#include "SpongeBob.hpp"
+#include "Squidward.hpp"
+#include <condition_variable>
+#include <memory>
 
 class KrustyKrab
 {
 
-public:
+  public:
     KrustyKrab();
     ~KrustyKrab();
 
@@ -24,12 +24,11 @@ public:
     void WaitUntilTicketsEmpty();
     void StopWorkers();
 
-private:
+  private:
     static void PrintLn(const std::string& msg);
     void PrintFinalStats() const;
 
-private:
-
+  private:
     std::mutex m_TicketLineMutex;
     std::condition_variable m_TicketCv;
     std::shared_ptr<std::queue<Ticket>> m_TicketLine;
