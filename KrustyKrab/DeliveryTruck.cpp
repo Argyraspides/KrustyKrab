@@ -8,7 +8,7 @@
 DeliveryTruck::DeliveryTruck(std::weak_ptr<Freezer> freezer) :
 m_Freezer(std::move(freezer)),
 m_IngredientCv(std::condition_variable()),
-m_NextDeliveryTime(std::chrono::milliseconds(1000)),
+m_NextDeliveryTime(std::chrono::milliseconds(50)),
 m_RandomDevice(std::random_device()),
 m_MerseneTwister(std::mt19937(m_RandomDevice())),
 m_MinRandomIngredients(1),

@@ -17,7 +17,7 @@ SpongeBob::SpongeBob(
     bool IsActuallyPatrick) : m_TicketLine(std::move(ticketLine)),
                               m_TicketLineMutex(ticketLineMutex),
                               m_TicketCv(ticketCv),
-                              m_RestTimeMs(std::chrono::milliseconds(500)),
+                              m_RestTimeMs(std::chrono::milliseconds(25)),
                               m_Freezer(std::move(freezer)),
                               m_IngredientsCv(std::condition_variable()),
                               m_IsActuallyPatrick(IsActuallyPatrick),
@@ -106,8 +106,6 @@ void SpongeBob::GetIngredients(const std::vector<Menu::EIngredient> &ingredients
 
         std::unique_lock<std::mutex> lock(freezer->IngredientsMutex());
 
-        // TODO GAUGAMELA() { If the krusty krab closes, and so the delivery truck stops, if we do not have enough ingredients for the final orders,
-        // we will be waiting here forever .... since the krusty krab waits for all tickets to be finished first }
         m_IngredientsCv.wait(lock, [&]() { return requestFulfilled || !m_Running; });
     }
 }

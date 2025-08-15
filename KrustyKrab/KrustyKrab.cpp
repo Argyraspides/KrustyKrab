@@ -29,7 +29,7 @@ KrustyKrab::~KrustyKrab()
     PrintLn("~KrustyKrab()");
 }
 
-void KrustyKrab::Open()
+void KrustyKrab::Open() const
 {
     if (!WorkersReady())
     {
@@ -38,8 +38,7 @@ void KrustyKrab::Open()
     StartWorkers();
 }
 
-bool KrustyKrab::WorkersReady()
-{
+bool KrustyKrab::WorkersReady() const {
     if
     (
         !m_Patrick ||
@@ -54,8 +53,7 @@ bool KrustyKrab::WorkersReady()
     return true;
 }
 
-void KrustyKrab::StartWorkers()
-{
+void KrustyKrab::StartWorkers() const {
     m_Squidward->Start();
     m_Freezer->Start();
     m_DeliveryTruck->Start();
@@ -91,6 +89,7 @@ void KrustyKrab::StopWorkers()
     m_Freezer->WakeUp();
     m_Freezer->Stop();
 
+    // Stop last in case SpongeBob or Patrick still need ingredients for their final orders
     m_DeliveryTruck->Stop();
 }
 
@@ -125,7 +124,7 @@ void KrustyKrab::PrintFinalStats() const
                                    freezerStats.m_AddedIngredientCts[i] -
                                    freezerStats.m_TakenIngredientCts[i];
 
-        std::cout << "│ " << std::setw(19) << std::left << Menu::IngredientNames[i]
+        std::cout << " │ " << std::setw(19) << std::left << Menu::IngredientNames[i]
                   << " │ " << std::setw(7) << std::right << freezerStats.m_InitialIngredientCts[i]
                   << " │ " << std::setw(7) << std::right << freezerStats.m_AddedIngredientCts[i]
                   << " │ " << std::setw(7) << std::right << freezerStats.m_TakenIngredientCts[i]
@@ -151,12 +150,12 @@ void KrustyKrab::PrintFinalStats() const
     std::cout << "│                                                                            │\n";
 
     // Patrick Stats
-    std::cout << "│ ⭐ PATRICK STAR                                                            │\n";
+    std::cout << "│ ⭐ PATRICK STAR                                                             │\n";
     std::cout << "│   Tickets Completed: " << std::setw(3) << patrickStats.m_TicketsCompleted << "                                                    │\n";
     std::cout << "│   Menu Items Prepared:                                                     │\n";
 
     if (patrickStats.m_CompletedMenuItems.empty()) {
-        std::cout << "│     • No items completed                                                   │\n";
+        std::cout << "│     • No items completed                                               │\n";
     } else {
         for (const auto& item : patrickStats.m_CompletedMenuItems) {
             std::cout << "│     • " << std::setw(25) << std::left << Menu::MenuItemNames[static_cast<size_t>(item.first)]
@@ -169,7 +168,7 @@ void KrustyKrab::PrintFinalStats() const
     // TICKET GENERATOR STATS
     std::cout << "┌─ ORDER MANAGEMENT ─────────────────────────────────────────────────────────┐\n";
     std::cout << "│                                                                            │\n";
-    std::cout << "│ 🦑 SQUIDWARD TENTACLES (Order Manager)                                    │\n";
+    std::cout << "│ 🦑 SQUIDWARD TENTACLES (Order Manager)                                     │\n";
     std::cout << "│   Total Tickets Generated: " << std::setw(3) << ticketGeneratorStats.m_TicketsGenerated << "                                          │\n";
     std::cout << "│   Menu Items Requested:                                                    │\n";
 

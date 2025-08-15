@@ -18,14 +18,14 @@ public:
     KrustyKrab();
     ~KrustyKrab();
 
-    void Open();
-    bool WorkersReady();
-    void StartWorkers();
+    void Open() const;
+    bool WorkersReady() const;
+    void StartWorkers() const;
     void WaitUntilTicketsEmpty();
     void StopWorkers();
 
 private:
-    void PrintLn(const std::string& msg);
+    static void PrintLn(const std::string& msg);
     void PrintFinalStats() const;
 
 private:
