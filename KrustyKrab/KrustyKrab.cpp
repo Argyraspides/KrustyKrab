@@ -14,10 +14,10 @@ KrustyKrab::KrustyKrab()
       m_TicketCv(std::condition_variable()),
       m_TicketLine(std::make_shared<std::queue<Ticket>>()),
       m_Freezer(std::make_shared<Freezer>()),
-      m_DeliveryTruck(std::make_shared<DeliveryTruck>(m_Freezer)),
-      m_Squidward(std::make_unique<Squidward>(m_TicketLine, m_TicketLineMutex, m_TicketCv)),
-      m_SpongeBob(std::make_unique<SpongeBob>(m_TicketLine, m_TicketLineMutex, m_TicketCv, m_Freezer)),
-      m_Patrick(std::make_unique<Patrick>(m_TicketLine, m_TicketLineMutex, m_TicketCv, m_Freezer, true))
+      m_DeliveryTruck(DeliveryTruck(m_Freezer)),
+      m_Squidward(Squidward(m_TicketLine, m_TicketLineMutex, m_TicketCv)),
+      m_SpongeBob(SpongeBob(m_TicketLine, m_TicketLineMutex, m_TicketCv, m_Freezer)),
+      m_Patrick(Patrick(m_TicketLine, m_TicketLineMutex, m_TicketCv, m_Freezer, true))
 {
     PrintLn("KrustyKrab()");
 }
@@ -29,7 +29,7 @@ KrustyKrab::~KrustyKrab()
     PrintLn("~KrustyKrab()");
 }
 
-void KrustyKrab::Open() const
+void KrustyKrab::Open()
 {
     if (!WorkersReady())
     {
@@ -40,7 +40,7 @@ void KrustyKrab::Open() const
 
 bool KrustyKrab::WorkersReady() const
 {
-    if (!m_Patrick || !m_SpongeBob || !m_Squidward)
+    if (!m_Freezer)
     {
         std::cout << "CAN'T OPEN THE KRUSTY KRAB!" << std::endl;
         return false;
@@ -49,13 +49,14 @@ bool KrustyKrab::WorkersReady() const
     return true;
 }
 
-void KrustyKrab::StartWorkers() const
+void KrustyKrab::StartWorkers()
 {
-    m_Squidward->Start();
     m_Freezer->Start();
-    m_DeliveryTruck->Start();
-    m_Patrick->Start();
-    m_SpongeBob->Start();
+
+    m_Squidward.Start();
+    m_DeliveryTruck.Start();
+    m_Patrick.Start();
+    m_SpongeBob.Start();
 }
 
 void KrustyKrab::WaitUntilTicketsEmpty()
@@ -70,20 +71,20 @@ void KrustyKrab::WaitUntilTicketsEmpty()
 
 void KrustyKrab::StopWorkers()
 {
-    m_Squidward->Stop();
+    m_Squidward.Stop();
 
     WaitUntilTicketsEmpty();
 
-    m_Patrick->StopLoop();
-    m_Patrick->WakeUp();
-    m_Patrick->Stop();
+    m_Patrick.StopLoop();
+    m_Patrick.WakeUp();
+    m_Patrick.Stop();
 
-    m_SpongeBob->StopLoop();
-    m_SpongeBob->WakeUp();
-    m_SpongeBob->Stop();
+    m_SpongeBob.StopLoop();
+    m_SpongeBob.WakeUp();
+    m_SpongeBob.Stop();
 
     // Stop last in case SpongeBob or Patrick still need ingredients for their final orders
-    m_DeliveryTruck->Stop();
+    m_DeliveryTruck.Stop();
 
     m_Freezer->StopLoop();
     m_Freezer->WakeUp();
@@ -97,9 +98,9 @@ void KrustyKrab::PrintLn(const std::string& msg)
 
 void KrustyKrab::PrintFinalStats() const
 {
-    const FrycookStats_t& spongebobStats = m_SpongeBob->WorkerStats();
-    const FrycookStats_t& patrickStats = m_Patrick->WorkerStats();
-    const RandomTicketStats_t ticketGeneratorStats = m_Squidward->TicketStats();
+    const FrycookStats_t& spongebobStats = m_SpongeBob.WorkerStats();
+    const FrycookStats_t& patrickStats = m_Patrick.WorkerStats();
+    const RandomTicketStats_t ticketGeneratorStats = m_Squidward.TicketStats();
     const FreezerStats_t freezerStats = m_Freezer->FreezerStats();
 
     std::cout << std::endl;

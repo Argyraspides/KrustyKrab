@@ -18,9 +18,9 @@ class KrustyKrab
     KrustyKrab();
     ~KrustyKrab();
 
-    void Open() const;
+    void Open();
     bool WorkersReady() const;
-    void StartWorkers() const;
+    void StartWorkers();
     void WaitUntilTicketsEmpty();
     void StopWorkers();
 
@@ -34,9 +34,10 @@ class KrustyKrab
     std::shared_ptr<std::queue<Ticket>> m_TicketLine;
 
     std::shared_ptr<Freezer> m_Freezer;
-    std::shared_ptr<DeliveryTruck> m_DeliveryTruck;
 
-    std::unique_ptr<Squidward> m_Squidward;
-    std::unique_ptr<SpongeBob> m_SpongeBob;
-    std::unique_ptr<Patrick> m_Patrick;
+    DeliveryTruck m_DeliveryTruck;
+
+    Squidward m_Squidward;
+    SpongeBob m_SpongeBob;
+    Patrick m_Patrick;
 };
