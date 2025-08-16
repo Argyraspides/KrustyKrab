@@ -9,7 +9,6 @@
 #include "SpongeBob.hpp"
 #include "Squidward.hpp"
 #include <condition_variable>
-#include <memory>
 
 class KrustyKrab
 {
@@ -19,7 +18,6 @@ class KrustyKrab
     ~KrustyKrab();
 
     void Open();
-    bool WorkersReady() const;
     void StartWorkers();
     void WaitUntilTicketsEmpty();
     void StopWorkers();
