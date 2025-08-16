@@ -31,9 +31,9 @@ class KrustyKrab
   private:
     std::mutex m_TicketLineMutex;
     std::condition_variable m_TicketCv;
-    std::shared_ptr<std::queue<Ticket>> m_TicketLine;
+    std::queue<Ticket> m_TicketLine;
 
-    std::shared_ptr<Freezer> m_Freezer;
+    Freezer m_Freezer;
 
     DeliveryTruck m_DeliveryTruck;
 

@@ -22,9 +22,10 @@ struct RandomTicketStats_t
 class RandomTicketGenerator : public Worker
 {
   public:
-    RandomTicketGenerator(std::weak_ptr<std::queue<Ticket>> ticketLine, std::mutex& ticketLineMutex,
+    RandomTicketGenerator(std::queue<Ticket>& ticketLine,
+                          std::mutex& ticketLineMutex,
                           std::condition_variable& ticketCv)
-        : m_TicketLine(std::move(ticketLine)),
+        : m_TicketLine(ticketLine),
           m_TicketLineMutex(ticketLineMutex),
           m_TicketCv(ticketCv),
           m_RandomDevice(std::random_device()),
@@ -41,7 +42,7 @@ class RandomTicketGenerator : public Worker
         std::cout << "RandomTicketGenerator()" << "\n";
     }
 
-    ~RandomTicketGenerator()
+    ~RandomTicketGenerator() override
     {
         std::cout << "~RandomTicketGenerator()" << "\n";
     }
@@ -75,13 +76,9 @@ class RandomTicketGenerator : public Worker
                 m_RandomTicketStats.m_MenuItemsGenerated[randomItem.m_MenuItemName]++;
             }
 
-            std::shared_ptr<std::queue<Ticket>> ticketLine = m_TicketLine.lock();
-            if (!ticketLine)
-                break;
-
             {
                 std::unique_lock<std::mutex> lock(m_TicketLineMutex);
-                ticketLine->push(randomTicket);
+                m_TicketLine.push(randomTicket);
             }
 
             m_TicketCv.notify_all();
@@ -91,7 +88,7 @@ class RandomTicketGenerator : public Worker
     }
 
   private:
-    std::weak_ptr<std::queue<Ticket>> m_TicketLine;
+    std::queue<Ticket>& m_TicketLine;
     std::mutex& m_TicketLineMutex;
     std::condition_variable& m_TicketCv;
 

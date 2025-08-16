@@ -12,13 +12,16 @@ const std::string RESET_ANSI_SEQ = "\033[0m";
 constexpr int MINIMUM_REST_TIME_MS = 1;
 constexpr int MAXIMUM_REST_TIME_MS = 15;
 
-SpongeBob::SpongeBob(std::weak_ptr<std::queue<Ticket>> ticketLine, std::mutex& ticketLineMutex,
-                     std::condition_variable& ticketCv, std::weak_ptr<Freezer> freezer, bool IsActuallyPatrick)
-    : m_TicketLine(std::move(ticketLine)),
+SpongeBob::SpongeBob(std::queue<Ticket>& ticketLine,
+                     std::mutex& ticketLineMutex,
+                     std::condition_variable& ticketCv,
+                     Freezer& freezer,
+                     bool IsActuallyPatrick)
+    : m_TicketLine(ticketLine),
       m_TicketLineMutex(ticketLineMutex),
       m_TicketCv(ticketCv),
       m_RestTimeMs(std::chrono::milliseconds(Rng::RandomInt(MINIMUM_REST_TIME_MS, MAXIMUM_REST_TIME_MS))),
-      m_Freezer(std::move(freezer)),
+      m_Freezer(freezer),
       m_IngredientsCv(std::condition_variable()),
       m_IsActuallyPatrick(IsActuallyPatrick),
       m_FrycookStats(FrycookStats_t())
@@ -79,22 +82,16 @@ Ticket SpongeBob::TryGetTicket() const
 {
     Ticket finalTicket = {};
 
-    std::shared_ptr<std::queue<Ticket>> ticketLine = m_TicketLine.lock();
-    if (!ticketLine)
-    {
-        return finalTicket;
-    }
-
     bool nowEmpty = false;
     {
         std::unique_lock<std::mutex> lock(m_TicketLineMutex);
-        m_TicketCv.wait(lock, [&]() { return !ticketLine->empty() || !m_Running; });
+        m_TicketCv.wait(lock, [&]() { return !m_TicketLine.empty() || !m_Running; });
 
-        if (!ticketLine->empty())
+        if (!m_TicketLine.empty())
         {
-            finalTicket = ticketLine->front();
-            ticketLine->pop();
-            nowEmpty = ticketLine->empty();
+            finalTicket = m_TicketLine.front();
+            m_TicketLine.pop();
+            nowEmpty = m_TicketLine.empty();
         }
     }
 
@@ -111,17 +108,12 @@ void SpongeBob::GetIngredients(const std::vector<Menu::EIngredient>& ingredients
 {
     for (int i = 0; i < ingredients.size(); i++)
     {
-        std::shared_ptr<Freezer> freezer = m_Freezer.lock();
-
-        if (!freezer)
-            return;
-
         bool requestFulfilled = false;
 
         IngredientRequest_t ir{m_IngredientsCv, requestFulfilled, ingredients[i], ingredientCount[i]};
-        freezer->RequestIngredient(ir);
+        m_Freezer.RequestIngredient(ir);
 
-        std::unique_lock<std::mutex> lock(freezer->IngredientsMutex());
+        std::unique_lock<std::mutex> lock(m_Freezer.IngredientsMutex());
 
         m_IngredientsCv.wait(lock, [&]() { return requestFulfilled || !m_Running; });
     }

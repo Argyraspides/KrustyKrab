@@ -10,13 +10,13 @@
 class DeliveryTruck : public Worker
 {
   public:
-    DeliveryTruck(std::weak_ptr<Freezer> freezer);
-    ~DeliveryTruck();
+    DeliveryTruck(Freezer& freezer);
+    ~DeliveryTruck() override;
 
     void Work() override;
 
   private:
-    std::weak_ptr<Freezer> m_Freezer;
+    Freezer& m_Freezer;
 
     std::condition_variable m_IngredientCv;
     std::chrono::milliseconds m_NextDeliveryTime;

@@ -65,7 +65,7 @@ void Freezer::WakeUp()
     m_IngredientsCv.notify_all();
 }
 
-const FreezerStats_t& Freezer::FreezerStats()
+const FreezerStats_t& Freezer::FreezerStats() const
 {
     return m_FreezerStats;
 }
@@ -96,11 +96,6 @@ void Freezer::Work()
 
                 m_Ingredients[ingredientIdx] -= req.m_IngredientCount;
                 m_FreezerStats.m_TakenIngredientCts[ingredientIdx] += req.m_IngredientCount;
-
-                bool discrepancy = m_FreezerStats.m_InitialIngredientCts[ingredientIdx] +
-                                       m_FreezerStats.m_AddedIngredientCts[ingredientIdx] -
-                                       m_FreezerStats.m_TakenIngredientCts[ingredientIdx] !=
-                                   m_Ingredients[ingredientIdx];
 
                 req.m_RequestFulfilled = true;
                 req.m_IngredientCv.notify_one();

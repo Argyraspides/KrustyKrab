@@ -28,7 +28,7 @@ class Freezer : public Worker
     void AddIngredient(Menu::EIngredient i, size_t ct);
     std::mutex& IngredientsMutex();
     void WakeUp();
-    const FreezerStats_t& FreezerStats();
+    const FreezerStats_t& FreezerStats() const;
 
   protected:
     void Work() override;

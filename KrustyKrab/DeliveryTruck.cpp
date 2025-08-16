@@ -9,8 +9,8 @@
 constexpr int MINIMUM_NEXT_DELIVERY_TIME_MS = 1;
 constexpr int MAXIMUM_NEXT_DELIVERY_TIME_MS = 15;
 
-DeliveryTruck::DeliveryTruck(std::weak_ptr<Freezer> freezer)
-    : m_Freezer(std::move(freezer)),
+DeliveryTruck::DeliveryTruck(Freezer& freezer)
+    : m_Freezer(freezer),
       m_IngredientCv(std::condition_variable()),
       m_NextDeliveryTime(Rng::RandomInt(MINIMUM_NEXT_DELIVERY_TIME_MS, MAXIMUM_NEXT_DELIVERY_TIME_MS)),
       m_RandomDevice(std::random_device()),
@@ -40,12 +40,7 @@ void DeliveryTruck::Work()
         size_t randomIngredientCt = m_IngredientCtDist(m_MerseneTwister);
         Menu::EIngredient randomIngredient = static_cast<Menu::EIngredient>(m_IngredientTypeDist(m_MerseneTwister));
 
-        std::shared_ptr<Freezer> freezer = m_Freezer.lock();
-
-        if (!freezer)
-            continue;
-
-        freezer->AddIngredient(randomIngredient, randomIngredientCt);
+        m_Freezer.AddIngredient(randomIngredient, randomIngredientCt);
         m_DeliveredIngredients[static_cast<size_t>(randomIngredient)] += randomIngredientCt;
     }
 }

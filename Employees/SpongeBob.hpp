@@ -15,8 +15,11 @@ class SpongeBob : public Worker
 {
 
   public:
-    SpongeBob(std::weak_ptr<std::queue<Ticket>> ticketLine, std::mutex& ticketLineMutex,
-              std::condition_variable& ticketCv, std::weak_ptr<Freezer> freezer, bool IsActuallyPatrick = false);
+    SpongeBob(std::queue<Ticket>& ticketLine,
+              std::mutex& ticketLineMutex,
+              std::condition_variable& ticketCv,
+              Freezer& freezer,
+              bool IsActuallyPatrick = false);
     ~SpongeBob() override;
     void PrintLn(const std::string& str) const;
     void WakeUp();
@@ -33,12 +36,12 @@ class SpongeBob : public Worker
     void GetIngredients(const std::vector<Menu::EIngredient>& ingredients, const std::vector<size_t>& ingredientCount);
 
   private:
-    std::weak_ptr<std::queue<Ticket>> m_TicketLine;
+    std::queue<Ticket>& m_TicketLine;
     std::mutex& m_TicketLineMutex;
     std::condition_variable& m_TicketCv;
     std::chrono::milliseconds m_RestTimeMs;
 
-    std::weak_ptr<Freezer> m_Freezer;
+    Freezer& m_Freezer;
     std::condition_variable m_IngredientsCv;
 
     // I'M SORRY, PATRICK!

@@ -12,8 +12,8 @@ const std::string RESET_ANSI_SEQ = "\033[0m";
 KrustyKrab::KrustyKrab()
     : m_TicketLineMutex(std::mutex()),
       m_TicketCv(std::condition_variable()),
-      m_TicketLine(std::make_shared<std::queue<Ticket>>()),
-      m_Freezer(std::make_shared<Freezer>()),
+      m_TicketLine(std::queue<Ticket>()),
+      m_Freezer(Freezer()),
       m_DeliveryTruck(DeliveryTruck(m_Freezer)),
       m_Squidward(Squidward(m_TicketLine, m_TicketLineMutex, m_TicketCv)),
       m_SpongeBob(SpongeBob(m_TicketLine, m_TicketLineMutex, m_TicketCv, m_Freezer)),
@@ -31,28 +31,12 @@ KrustyKrab::~KrustyKrab()
 
 void KrustyKrab::Open()
 {
-    if (!WorkersReady())
-    {
-        return;
-    }
     StartWorkers();
-}
-
-bool KrustyKrab::WorkersReady() const
-{
-    if (!m_Freezer)
-    {
-        std::cout << "CAN'T OPEN THE KRUSTY KRAB!" << std::endl;
-        return false;
-    }
-
-    return true;
 }
 
 void KrustyKrab::StartWorkers()
 {
-    m_Freezer->Start();
-
+    m_Freezer.Start();
     m_Squidward.Start();
     m_DeliveryTruck.Start();
     m_Patrick.Start();
@@ -64,7 +48,7 @@ void KrustyKrab::WaitUntilTicketsEmpty()
     PrintLn("The Krusty Krab is about to close. Waiting for Patrick & SpongeBob to finish their tickets ...");
     {
         std::unique_lock<std::mutex> lock(m_TicketLineMutex);
-        m_TicketCv.wait(lock, [this]() { return m_TicketLine->empty(); });
+        m_TicketCv.wait(lock, [this]() { return m_TicketLine.empty(); });
     }
     PrintLn("Patrick & SpongeBob have finished their tickets!");
 }
@@ -86,9 +70,9 @@ void KrustyKrab::StopWorkers()
     // Stop last in case SpongeBob or Patrick still need ingredients for their final orders
     m_DeliveryTruck.Stop();
 
-    m_Freezer->StopLoop();
-    m_Freezer->WakeUp();
-    m_Freezer->Stop();
+    m_Freezer.StopLoop();
+    m_Freezer.WakeUp();
+    m_Freezer.Stop();
 }
 
 void KrustyKrab::PrintLn(const std::string& msg)
@@ -100,8 +84,8 @@ void KrustyKrab::PrintFinalStats() const
 {
     const FrycookStats_t& spongebobStats = m_SpongeBob.WorkerStats();
     const FrycookStats_t& patrickStats = m_Patrick.WorkerStats();
-    const RandomTicketStats_t ticketGeneratorStats = m_Squidward.TicketStats();
-    const FreezerStats_t freezerStats = m_Freezer->FreezerStats();
+    const RandomTicketStats_t& ticketGeneratorStats = m_Squidward.TicketStats();
+    const FreezerStats_t& freezerStats = m_Freezer.FreezerStats();
 
     std::cout << std::endl;
     std::cout << "================================================================================\n";
